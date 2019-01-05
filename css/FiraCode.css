@@ -1,0 +1,12 @@
+@font-face {
+  font-family: 'Fira Code';
+  font-style: normal;
+  font-weight: 400;
+  font-feature-settings: 'calt' 1;
+  font-variant-ligatures: contextual;
+  src: local('Fira Code'), local('FiraCode-Regular'),
+       url(./FiraCode-Regular.eot) format('embedded-opentype'),
+       url(./FiraCode-Regular.woff2) format('woff2'),
+       url(./FiraCode-Regular.woff) format('woff'),
+       url(./FiraCode-Regular.otf) format('opentype');
+}
