@@ -26,354 +26,438 @@
   <a id="switchon"  href="javascript:develop()"   style="text-decoration:none;">view the source code</a>
   <a id="switchoff" href="javascript:undevelop()" style="text-decoration:none;display:none;">hide the source code</a>
   </div>
-  <div>
-    <pre id="source" style="display:none;word-wrap: break-word;width:720pt;">
-    <code class="elm"  style="font-family:'Fira Code';font-size:9pt;">
-      import Browser exposing (element)
-      import Html exposing (Html, Attribute, br, div, input, text, textarea, legend, fieldset, tr, td, table, button,img)
-      import Html.Attributes exposing (style, property, cols, rows, readonly, placeholder, value, attribute, src)
-      import Html.Events exposing (onClick, onInput, on)
-      import Json.Decode as Decode
-      import Json.Decode  exposing (Decoder, field, index, string, list)
-      import Json.Encode as Encode
-      import Dict
-      import Http
-      import Task
-      
-      -- MAIN
-      main = Browser.element { init = init
-                             , update = update
-                             , view = view
-                             , subscriptions = subscriptions 
-                             }
-      
-      -- MODEL
-      type alias Model = { input : String
-                         , offset : Float
-                         , content : List String
-                         , books : List (List String)
-                         , status : String
+ <div>
+ <pre id="source" style="display:none;word-wrap: break-word;width:720pt;">
+ <code class="elm"  style="font-family:'Fira Code';font-size:9pt;">
+  import Browser exposing (element)
+  import Html exposing ( Html, Attribute, br, div, input, text, textarea, label
+                       , legend, fieldset, tr, td, th, table, button, img, h1)
+  import Html.Attributes exposing ( style, property, cols, rows, readonly
+                                  , placeholder, value, attribute, src, class)
+  import Html.Events exposing (onClick, onInput, on)
+  import Json.Decode as Decode
+  import Json.Decode exposing (Decoder, field, index, string, list)
+  import Json.Encode as Encode
+  import Dict
+  import Http
+  
+  -- MAIN
+  main = Browser.element { init = init
+                         , update = update
+                         , view = view
+                         , subscriptions = subscriptions 
                          }
-      
-      init : () -> (Model, Cmd Msg)
-      init _ = ( { input = ""
-                 , offset = 0
-                 , content = [""]
-                 , books = []
-                 , status = ""}
-               , Cmd.none)
-      
-      
-      
-      -- UPDATE
-      type Msg = Change String 
-               | Scroll Float
-               | Retrieve
-               | GotBookInfo (Result Http.Error (List (List String)))
-      
-      update : Msg -> Model -> (Model, Cmd Msg)
-      update msg model =
-        case msg of
-          Change newInput -> ({ model | input=newInput, content=(String.lines newInput) }, Cmd.none)
-          Scroll newOffset -> ({ model | offset=newOffset}, Cmd.none)
-          Retrieve -> ({ model| books=[], status = "　情報を取得しています……" }, getBooksInfo model.content)
-          GotBookInfo result ->
-            case result of
-              Ok info -> ({model| books=info, status = ""}, Cmd.none)
-              Err _ -> ({model| books=[["HTTP error","","",""]], status=""}, Cmd.none)
-      
-      onScroll : (Float -> msg) -> Attribute msg
-      onScroll tagger = on "scroll" (Decode.map tagger targetScrollTop)
-      
-      targetScrollTop : Decode.Decoder Float
-      targetScrollTop = Decode.at ["target", "scrollTop"] Decode.float
-      
-      -- SUBSCRIPTIONS
-      subscriptions : Model -> Sub Msg
-      subscriptions model = Sub.none
-      
-      -- VIEW
-      view : Model -> Html Msg
-      view model =
-       let
-        makeTextAreaAttr fun bool str = 
-          [ placeholder str
-          , value (fun model.input)
-          , readonly bool
-          , onInput Change
-          , onScroll Scroll
-          , cols 25
-          , rows 25
-          , style "font-size" "10pt"
-          , style "font-family" "'Fira Code'"
-          , property "scrollTop" (Encode.float model.offset)
-          ]   
-       in
-        div [style "whitespace" "no-wrap"]
-          [  text "ISBN-10 ⇔ ISBN-13 ／ ハイフンあり ⇔ ハイフンなし （検証・変換ツール）"
-          ,  br [] []
-          ,  br [] []
-          ,  textarea (makeTextAreaAttr identity False "ここにISBNのリストをペースト" ) []
-          , text "　　"
-          , fieldset [style "display" "inline"] 
-             [ legend []  [ text "ISBN-13（ハイフンあり）" ]
-             , textarea (makeTextAreaAttr to13mh True "") []
-             ]
-          , text " "
-          ,  fieldset [style "display" "inline"] 
-             [ legend []  [ text "ISBN-10（ハイフンあり）" ]
-             ,textarea (makeTextAreaAttr to10mh True "") []
-             ]
-          , text " "
-          ,  fieldset [style "display" "inline"] 
-             [ legend []  [ text "ISBN-13（ハイフンなし）" ]
-             ,textarea (makeTextAreaAttr to13m True "") []
-             ]
-          , text " "
-          ,  fieldset [style "display" "inline"] 
-             [ legend []  [ text "ISBN-10（ハイフンなし）" ]
-             ,textarea (makeTextAreaAttr to10m True "") []
-             ]
+  
+  -- MODEL
+  type alias Model = { input : String
+                     , offset : Float
+                     , content : List (Int, String)
+                     , books : List Book
+                     , table : List Book
+                     , status : Status
+                     }
+  
+  type alias Book = { order  : Int
+                    , input  : String
+                    , isbn13 : String
+                    , nation : String
+                    , publisher : String
+                    , pubdate : String
+                    , authors : String
+                    , title : String
+                    , remark : String
+                    }
+  
+  makeEmptyBook : Int -> Book
+  makeEmptyBook n = { order = n
+                    , input = "　"
+                    , isbn13 = ""
+                    , nation = ""
+                    , publisher = ""
+                    , pubdate = ""
+                    , authors = ""
+                    , title = ""
+                    , remark = ""
+                    }
+  
+  type Status = Loading | Done
+  
+  init : () -> (Model, Cmd Msg)
+  init _ = ( { input = ""
+             , offset = 0
+             , content = []
+             , books = []
+             , table = []
+             , status = Done}
+           , Cmd.none)
+  
+  
+  
+  -- UPDATE
+  type Msg = Change String 
+           | Scroll Float
+           | Retrieve
+           | GotBookInfo (Result Http.Error Book)
+  
+  update : Msg -> Model -> (Model, Cmd Msg)
+  update msg model =
+    let
+      enumerate = enum [] 0
+      enum acc n list = case list of
+        (x::xs) ->  enum ((n,x)::acc) (n+1) xs
+        []      ->  List.reverse acc 
+    in
+      case msg of
+        Change newInput -> ({ model | input=newInput, content=(newInput|>String.lines|>enumerate) }, Cmd.none)
+        Scroll newOffset -> ({ model | offset=newOffset}, Cmd.none)
+        Retrieve -> ({ model| books=[], table=[], status = Loading }, getBooksInfo model.content)
+        GotBookInfo result -> 
+          if (List.length model.content)-1 == (List.length model.books) 
+            then case result of
+              Ok info -> ({model| table = List.sortBy .order (info::model.books)
+                                , books = info::model.books, status = Done}, Cmd.none)
+              Err _   -> ({model| table = [makeEmptyBook 0], status = Done}, Cmd.none)
+            else  case result of
+              Ok info -> ({model| books = info::model.books, status = Loading}, Cmd.none)
+              Err _   -> ({model| books = [makeEmptyBook 0], status = Loading}, Cmd.none)
+  
+  
+  onScroll : (Float -> msg) -> Attribute msg
+  onScroll tagger = on "scroll" (Decode.map tagger targetScrollTop)
+  
+  targetScrollTop : Decode.Decoder Float
+  targetScrollTop = Decode.at ["target", "scrollTop"] Decode.float
+  
+  -- SUBSCRIPTIONS
+  subscriptions : Model -> Sub Msg
+  subscriptions model = Sub.none
+  
+  -- VIEW
+  view : Model -> Html Msg
+  view model =
+   let
+    makeTextAreaAttr fun bool str = 
+      [ placeholder str
+      , value (fun model.input)
+      , readonly bool
+      , onInput Change
+      , onScroll Scroll
+      , cols 20
+      , rows 20
+      , style "font-size" "10pt"
+      , style "font-family" "'Fira Code'"
+      , property "scrollTop" (Encode.float model.offset)
+      , class "textarea"
+      ]
+    fieldsetAttr = [style "display" "inline", class "box"]   
+   in
+    div [style "whitespace" "no-wrap", style "margin" "10pt"]
+      [  h1 [class "title is-4"] [text "ISBN-10 ⇔ ISBN-13 ／ ハイフンあり ⇔ ハイフンなし （検証・変換ツール）"]
+      ,  br [] []
+      ,  br [] []
+      , fieldset fieldsetAttr 
+         [ label [] [text "入力"]
+         , textarea (makeTextAreaAttr identity False "ISBNのリストをペースト") []
+         ]
+      , text "　　"
+      , fieldset fieldsetAttr 
+         [ label []  [ text "ISBN-13（ハイフンあり）" ]
+         , textarea (makeTextAreaAttr to13mh True "") []
+         ]
+      , text " "
+      ,  fieldset fieldsetAttr 
+         [ label []  [ text "ISBN-10（ハイフンあり）" ]
+         ,textarea (makeTextAreaAttr to10mh True "") []
+         ]
+      , text " "
+      ,  fieldset fieldsetAttr 
+         [ label []  [ text "ISBN-13（ハイフンなし）" ]
+         ,textarea (makeTextAreaAttr to13m True "") []
+         ]
+      , text " "
+      ,  fieldset fieldsetAttr 
+         [ label []  [ text "ISBN-10（ハイフンなし）" ]
+         ,textarea (makeTextAreaAttr to10m True "") []
+         ]
+      , br [] []
+      , br [] []
+      , div []
+          [ button [ onClick Retrieve
+                   , class (if model.status == Loading then "button is-loading" else "button")
+                   ]
+                   [ text "書籍情報を取得する" ]
           , br [] []
-          , br [] []
-          , div []
-            [ button [onClick Retrieve] [ text "書籍情報を取得する" ]
-            , text (model.status)
-            , if model.status /= "" then img [src "loading.gif"] [] else text "" 
-            , br [] []
-            , table [ attribute "border" "" ] (viewBookInfo model)
-            ]
+          , table [class "table is-bordered is-striped"] (viewBookInfo model)
           ]
-      
-      viewBookInfo : Model -> List (Html Msg)
-      viewBookInfo model =
+      ]
+  
+  viewBookInfo : Model -> List (Html Msg)
+  viewBookInfo model =
+        let
+          makeRow : Book -> (Html Msg)
+          makeRow book = 
             let
-              makeRow : List String -> (Html Msg)
-              makeRow strs = 
-                let
-                  ss = if List.head strs == Just "" then ["　","","","","",""] else strs 
-                in
-                  tr [] (List.map (\s -> td [] [text s]) ss)
-              header = tr [] [ td [] [text "入力"]
-                             , td [] [text "検証"]
-                             , td [] [text "出版者"]
-                             , td [] [text "出版年/有無"]
-                             , td [] [text "著者名"]
-                             , td [] [text "書名"] ]
+              bk = if book.input == "" then makeEmptyBook book.order else book
             in
-              header :: (List.map makeRow model.books)
-       
-      
-      
-      -- HTTP
-      getBookInfo str =
-            let
-              makeLine s err =  case verify (stringToInts str) of
-                                 Err _ -> [s, to13h s, getPub s++" ？", "N/A (Bad ISBN)", "", ""]
-                                 Ok  _ -> [s, to13h s, getPub s, "N/A ("++err++")", "", ""]
-              resolve response = case response of
-                  Http.BadUrl_ url ->  Ok (makeLine str "Bad Url")
-                  Http.Timeout_ ->  Ok (makeLine str "Timeout")
-                  Http.NetworkError_ ->  Ok (makeLine str "Network Error")
-                  Http.BadStatus_ metadata body ->  Ok (makeLine str ("Bad Statuts: " ++ String.fromInt metadata.statusCode))
-                  Http.GoodStatus_ metadata body -> case Json.Decode.decodeString bookDecoder body of
-                      Ok value -> Ok (str::to13h str::getPub str::value)
-                      Err err ->  Ok (makeLine str "Not Found") 
-            in
-              Http.task  { method = "GET"
-                         , headers = []
-                         , url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" ++ (to13 str)
-                         , body = Http.emptyBody
-                         , resolver = Http.stringResolver resolve
-                         , timeout = Nothing
-                         }
-      
-      getBooksInfo : List String -> Cmd Msg
-      getBooksInfo = 
-          List.map getBookInfo >> Task.sequence 
-            >> Task.attempt (\result -> case result of 
-                                          Ok r ->  GotBookInfo result
-                                          Err _ -> GotBookInfo (Ok [["","","","","",""]]))
-      
-      bookDecoder : Decoder (List String)
-      bookDecoder =
-        let 
-          volume =  field "items" << index 0 << field "volumeInfo"
-          title  = volume << field "title" <| string
-          authors =  Json.Decode.map (String.join ", ") (volume << field "authors" <| list string)
-          date   = volume << field "publishedDate" <| string
+              tr [] [ td [class "has-text-centered"] [text bk.input]
+                    , td [class "has-text-centered"] [text bk.isbn13]
+                    , td [class "has-text-centered"] [text (if bk.nation /= "Japan" then bk.nation else bk.publisher)]
+                    , td [class "has-text-centered"] [text (if bk.remark /= "" then bk.remark else bk.pubdate)]
+                    , td [class "has-text-centered"] [text bk.authors]
+                    , td [class "has-text-centered"] [text bk.title]
+                    ]
+          header = tr [] [ th [class "has-text-centered"] [text " 入力 "]
+                         , th [class "has-text-centered"] [text " 検証結果 / ISBN-13 "]
+                         , th [class "has-text-centered"] [text " 圏域 / 出版者 "]
+                         , th [class "has-text-centered"] [text " 有無 / 出版年 "]
+                         , th [class "has-text-centered"] [text " 著者名 "]
+                         , th [class "has-text-centered"] [text " 書名 "]
+                         ]
         in
-          Json.Decode.map3 (\x y z-> [x,y,z]) date authors title
-      
-      
-      
-      -- Codes concerning ISBN
-      
-      find : (a -> Bool) -> (List a) -> Maybe a
-      find pred list = case list of 
-        (x::xs) -> if pred x then Just x else find pred xs
-        []      -> Nothing
-      
-      fromInts : List Int -> Int -- (e.g. [9,7,8] -> 978) 
-      fromInts = List.foldl (\n acc -> acc*10+n) 0
-      
-      intsToString : List Int -> String --  (e.g. [7,2,10] -> "72X")
-      intsToString = List.map (\n -> if n == 10 then "X" else String.fromInt n) >> String.concat
-      
-      isDigit : Char -> Bool -- (e.g. 0-9,X, ０-９,Ｘ -> True) 
-      isDigit char = 
-        let 
-          num = Char.toCode char 
-        in
-          (num >=48 && num <= 57) || num == 88 || (num >= 65296 && num <= 65305) || num == 65336
-      
-      stringToInts : String -> List Int -- (e.g. "123456789X" -> [1,2,3,4,5,6,7,8,9,10])
-      stringToInts = 
-        let
-          toInt char = case Char.toCode char of
-            88 -> 10
-            65336 -> 10
-            num -> if num <= 57 then num-48 else num-65296
-        in 
-          String.toList >> List.filter isDigit >> List.map toInt
-      
-      rectify : String -> String
-      rectify = stringToInts >> intsToString
-      
-      -- ISBN checksums
-      checksum10 = List.map2 (*) [10,9,8,7,6,5,4,3,2]      >> List.sum >> negate >> modBy 11
-      checksum13 = List.map2 (*) [1,3,1,3,1,3,1,3,1,3,1,3] >> List.sum >> negate >> modBy 10
-      
-      -- verify the validity of a given ISBN
-      verify : List Int -> Result String (List Int)
-      verify digits = 
-        let
-          len = List.length digits
-          lastdigit = List.drop (len-1) digits
-          prefix = List.take 3 digits
-        in
-          if      len == 0                                            then Err ""
-          else if len /= 10 && len /= 13                              then Err "Error: wrong length"
-          else if len == 10 && [checksum10 digits]  /= lastdigit      then Err "Error: bad check digit"
-          else if len == 13 && prefix /= [9,7,8] && prefix /= [9,7,9] then Err "Error: invalid prefix"
-          else if len == 13 && [checksum13 digits]  /= lastdigit      then Err "Error: bad check digit"
-          else                                                             Ok <| digits     
-      
-      conv10 : List Int -> Result String (List Int)
-      conv10 digits = 
-        let
-          len    = List.length digits
-          body   = List.take (len-1) digits |> List.drop 3
-          result = verify digits
-        in case result of
-          Err _   -> result
-          Ok  _   -> if len == 10 then result
-                     else              Ok <| body ++ [checksum10 body]
-      
-      conv13 : List Int -> Result String (List Int)
-      conv13 digits =
-        let     
-          len    = List.length digits
-          body   = digits |> List.take 9 |> List.append [9,7,8]
-          result = verify digits
-        in case result of
-          Err _ -> result
-          Ok _  -> if len == 13 then result 
-                   else              Ok <| body ++ [checksum13 body]
-      
-      
-      type alias ISBN = { header: List Int
-                        , nation: List Int
-                        , publisher:List Int
-                        , book:List Int
-                        , digit:List Int}
-      
-      toISBN digits = ISBN [] [] [] digits []
-      fromISBN isbn = [isbn.header, isbn.nation, isbn.publisher, isbn.book, isbn.digit]
-      divideISBN    = toISBN >> divideNation >> dividePublisher >> fromISBN
-      
-      divideNation : ISBN -> ISBN
-      divideNation isbn =
-        let
-          digits = isbn.book
-          len    = List.length digits
-          header = List.take (len-10) digits
-          digit  = List.drop (len-1)  digits
-          body   = List.take 9 <| List.drop (len-10) <| digits
-          candidate = (if len == 10 then "978" else "")
-                   ++ intsToString header 
-                   ++ "-"
-                   ++ (List.take 5 body |> intsToString)
-          key = find (\k -> String.startsWith k candidate) (Dict.keys dict)
-          nation = case key of
-            Nothing -> []
-            Just k  -> k |> String.dropLeft 4 |> stringToInts
-          book = List.drop (List.length nation) body
-        in
-          ISBN header nation [] book digit
-      
-      dividePublisher : ISBN -> ISBN
-      dividePublisher isbn =
-        let
-          headnat = (if List.isEmpty isbn.header then "978" else intsToString isbn.header) ++ "-" ++ intsToString isbn.nation
-          ranges : List (List Int)
-          ranges = case Dict.get headnat dict  of
-            Just dat -> dat
-            Nothing  -> [[0,0,0]]
-          candidate = isbn.book |> List.take 7 |> intsToString
-          check : List Int -> Bool
-          check bounds = case bounds of
-            [lower,upper,n] -> String.fromInt lower <= candidate && candidate <= String.fromInt upper
-            _               -> False
-          range : Int
-          range = case find check ranges of
-            Just [lower, upper, n] -> n
-            _  -> 0
-        in
-          ISBN isbn.header isbn.nation (List.take range isbn.book) (List.drop range isbn.book) isbn.digit
-      
-      
-      unhyphenate : Result String (List Int) -> String
-      unhyphenate result = case result of
-        Err str -> str
-        Ok ns -> intsToString ns
-        
-      hyphenate : Result String (List Int) -> String
-      hyphenate result = case result of
-        Err str -> str
-        Ok ns -> ns |> divideISBN |> List.filter (List.isEmpty >> not) |> List.map intsToString |> String.join "-"
-      
-      -- String -> String
-      to10  = stringToInts >> conv10 >> unhyphenate
-      to10h = stringToInts >> conv10 >> hyphenate
-      to13  = stringToInts >> conv13 >> unhyphenate
-      to13h = stringToInts >> conv13 >> hyphenate
-      
-      to10m   = String.lines >> List.map to10  >>  String.join "\n"
-      to10mh  = String.lines >> List.map to10h >>  String.join "\n"
-      to13m   = String.lines >> List.map to13  >>  String.join "\n"
-      to13mh  = String.lines >> List.map to13h >>  String.join "\n"
-      
-      getPub : String -> String
-      getPub str =
-        let
-          isbn = str |> stringToInts >> toISBN >>  divideNation >> dividePublisher
-          name = dict2 |> (isbn.publisher |> intsToString >> Dict.get)
-        in
-          case name of
-            Just s  -> if isbn.nation == [4] then s else "（外国）"
-            Nothing -> "（不明）"
-      
-      
-      dict : Dict.Dict String (List (List Int))
-      dict = Dict.fromList [("978-0" , [[0,1999999,2],[2000000,2279999,3],[2280000,2289999,4],[2290000,6479999,3],[6480000,6489999,7],[6490000,6999999,3],[7000000,8499999,4],[8500000,8999999,5],[9000000,9499999,6],[9500000,9999999,7]]),("978-1" , [[0,999999,2],[1000000,3999999,3],[4000000,5499999,4],[5500000,7319999,5],[7320000,7399999,7],[7400000,7749999,5],[7750000,7753999,7],[7754000,8697999,5],[8698000,9729999,6],[9730000,9877999,4],[9878000,9989999,6],[9990000,9999999,7]]),("978-2" , [[0,1999999,2],[2000000,3499999,3],[3500000,3999999,5],[4000000,6999999,3],[7000000,8399999,4],[8400000,8999999,5],[9000000,9199429,6],[9199430,9199689,7],[9199690,9499999,6],[9500000,9999999,7]]),("978-3" , [[0,299999,2],[300000,339999,3],[340000,369999,4],[370000,399999,5],[400000,1999999,2],[2000000,6999999,3],[7000000,8499999,4],[8500000,8999999,5],[9000000,9499999,6],[9500000,9539999,7],[9540000,9699999,5],[9700000,9899999,7],[9900000,9949999,5],[9950000,9999999,5]]),("978-4" , [[0,1999999,2],[2000000,6999999,3],[7000000,8499999,4],[8500000,8999999,5],[9000000,9499999,6],[9500000,9999999,7]])] -- 以下省略
-      
-      dict2 : Dict.Dict String String
-      dict2 = Dict.fromList [("00","岩波書店"),("01","旺文社"),("02","朝日新聞社"),("03","偕成社"),("04","角川書店"),("05","学習研究社"),("06","講談社"),("07","主婦の友社"),("08","集英社"),("09","小学館"),("10","新潮社"),("11","全音楽譜社"),("12","中央公論新社"),("13","東京大学出版会"),("14","日本放送出版協会(ＮＨＫ出版)"),("15","早川書房"),("16","文藝春秋"),("17","国立印刷局"),("18","明治図書出版"),("19","徳間書店")] -- 以下省略
-      
-    </code>
-    </pre>
-    </div>
+          header :: List.map makeRow model.table
+   
+  
+  
+  -- HTTP
+  getBooksInfo : List (Int, String) -> Cmd Msg
+  getBooksInfo = 
+    let
+      makeErrBook n str err =  { order = n
+                               , input=str
+                               , isbn13=to13h str
+                               , nation = getNation (stringToISBN str)
+                               , publisher = getPub (stringToISBN str)
+                               , pubdate = err
+                               , authors = err
+                               , title = err
+                               , remark = err
+                               }
+      expectISBN : Int -> String -> (Result Http.Error Book -> Msg) -> Decoder Book -> Http.Expect Msg
+      expectISBN n str toMsg decoder = Http.expectStringResponse toMsg <|
+        \response ->
+          case response of
+            Http.BadUrl_ url -> Ok (makeErrBook n str "Error (Bad URL)")
+            Http.Timeout_ -> Ok (makeErrBook n str "Error (Timeout)")
+            Http.NetworkError_ -> Ok (makeErrBook n str "Network Error")
+            Http.BadStatus_ metadata body -> 
+              Ok (makeErrBook n str ("Error (Bad Status: " ++ String.fromInt metadata.statusCode ++ ")"))
+            Http.GoodStatus_ metadata body ->
+              case Json.Decode.decodeString decoder body of
+                Ok value -> Ok value
+                Err _ -> case verify (stringToInts str) of
+                           Ok  _ -> Ok (makeErrBook n str "Not Found")
+                           Err _ -> Ok (makeErrBook n str "N/A (Bad ISBN)")
+      getBookInfo (n, str) = Http.get { url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" 
+                                            ++ (to13 str) ++ "&country=JP"
+                             , expect = (expectISBN n str) GotBookInfo (bookDecoder n str)
+                             }
+    in
+      List.map getBookInfo >> Cmd.batch 
+  
+  bookDecoder : Int -> String -> Decoder Book
+  bookDecoder n str =
+    let 
+      volume =  field "items" << index 0 << field "volumeInfo"
+      title   = volume << field "title" <| string
+      authors =  Json.Decode.map (String.join ", ") (volume << field "authors" <| list string)
+      date    = volume << field "publishedDate" <| string
+      isbn    = stringToISBN str
+    in
+      Json.Decode.map3 (\x y z-> { order = n
+                                 , input = str
+                                 , isbn13 = to13h str
+                                 , nation = getNation isbn
+                                 , publisher = getPub isbn
+                                 , pubdate = x
+                                 , authors = y
+                                 , title   = z
+                                 , remark  = ""
+                                 } ) date authors title
+  
+  
+  -- Codes concerning ISBN
+  
+  find : (a -> Bool) -> (List a) -> Maybe a
+  find pred list = case list of 
+    (x::xs) -> if pred x then Just x else find pred xs
+    []      -> Nothing
+  
+  fromInts : List Int -> Int -- (e.g. [9,7,8] -> 978) 
+  fromInts = List.foldl (\n acc -> acc*10+n) 0
+  
+  intsToString : List Int -> String --  (e.g. [7,2,10] -> "72X")
+  intsToString = List.map (\n -> if n == 10 then "X" else String.fromInt n) >> String.concat
+  
+  isDigit : Char -> Bool -- (e.g. 0-9,X, ０-９,Ｘ -> True) 
+  isDigit char = 
+    let 
+      num = Char.toCode char 
+    in
+      (num >=48 && num <= 57) || num == 88 || (num >= 65296 && num <= 65305) || num == 65336
+  
+  stringToInts : String -> List Int -- (e.g. "123456789X" -> [1,2,3,4,5,6,7,8,9,10])
+  stringToInts = 
+    let
+      toInt char = case Char.toCode char of
+        88 -> 10
+        65336 -> 10
+        num -> if num <= 57 then num-48 else num-65296
+    in 
+      String.toList >> List.filter isDigit >> List.map toInt
+  
+  rectify : String -> String
+  rectify = stringToInts >> intsToString
+  
+  -- ISBN checksums
+  checksum10 = List.map2 (*) [10,9,8,7,6,5,4,3,2]      >> List.sum >> negate >> modBy 11
+  checksum13 = List.map2 (*) [1,3,1,3,1,3,1,3,1,3,1,3] >> List.sum >> negate >> modBy 10
+  
+  -- verify the validity of a given ISBN
+  verify : List Int -> Result String (List Int)
+  verify digits = 
+    let
+      len = List.length digits
+      lastdigit = List.drop (len-1) digits
+      prefix = List.take 3 digits
+    in
+      if      len == 0                                            then Err ""
+      else if len /= 10 && len /= 13                              then Err "Error: wrong length"
+      else if len == 10 && [checksum10 digits]  /= lastdigit      then Err "Error: bad check digit"
+      else if len == 13 && prefix /= [9,7,8] && prefix /= [9,7,9] then Err "Error: invalid prefix"
+      else if len == 13 && [checksum13 digits]  /= lastdigit      then Err "Error: bad check digit"
+      else                                                             Ok <| digits     
+  
+  conv10 : List Int -> Result String (List Int)
+  conv10 digits = 
+    let
+      len    = List.length digits
+      body   = List.take (len-1) digits |> List.drop 3
+      result = verify digits
+    in case result of
+      Err _   -> result
+      Ok  _   -> if len == 10 then result
+                 else if  List.take 3 digits == [9,7,9] then Err "ISBN-10 unavailable" 
+                 else                                      Ok <| body ++ [checksum10 body]
+  
+  conv13 : List Int -> Result String (List Int)
+  conv13 digits =
+    let     
+      len    = List.length digits
+      body   = digits |> List.take 9 |> List.append [9,7,8]
+      result = verify digits
+    in case result of
+      Err _ -> result
+      Ok _  -> if len == 13 then result 
+               else              Ok <| body ++ [checksum13 body]
+  
+  
+  type alias ISBN = { header: List Int
+                    , nation: List Int
+                    , publisher:List Int
+                    , book:List Int
+                    , digit:List Int}
+  
+  toISBN digits = ISBN [] [] [] digits []
+  fromISBN isbn = [isbn.header, isbn.nation, isbn.publisher, isbn.book, isbn.digit]
+  intsToISBN    = toISBN >> divideNation >> dividePublisher
+  stringToISBN = stringToInts >> intsToISBN
+  
+  divideNation : ISBN -> ISBN
+  divideNation isbn =
+    let
+      digits = isbn.book
+      len    = List.length digits
+      header = List.take (len-10) digits
+      digit  = List.drop (len-1)  digits
+      body   = List.take 9 <| List.drop (len-10) <| digits
+      candidate = (if len == 10 then "978" else "")
+               ++ intsToString header 
+               ++ "-"
+               ++ (List.take 5 body |> intsToString)
+      key = find (\k -> String.startsWith k candidate) dictHeader
+      nation = case key of
+        Nothing -> []
+        Just k  -> k |> String.dropLeft 4 |> stringToInts
+      book = List.drop (List.length nation) body
+    in
+      ISBN header nation [] book digit
+  
+  dividePublisher : ISBN -> ISBN
+  dividePublisher isbn =
+    let
+      headnat = (if List.isEmpty isbn.header then "978" else intsToString isbn.header) ++ "-" ++ intsToString isbn.nation
+      ranges : List (List Int)
+      ranges = case Dict.get headnat dictRange  of
+        Just dat -> dat
+        Nothing  -> [[0,0,0]]
+      candidate = isbn.book |> List.take 7 |> intsToString
+      check : List Int -> Bool
+      check bounds = case bounds of
+        [lower,upper,n] -> String.fromInt lower <= candidate && candidate <= String.fromInt upper
+        _               -> False
+      range : Int
+      range = case find check ranges of
+        Just [lower, upper, n] -> n
+        _  -> 0
+    in
+      ISBN isbn.header isbn.nation (List.take range isbn.book) (List.drop range isbn.book) isbn.digit
+  
+  
+  unhyphenate : Result String (List Int) -> String
+  unhyphenate result = case result of
+    Err str -> str
+    Ok ns -> intsToString ns
+    
+  hyphenate : Result String (List Int) -> String
+  hyphenate result = case result of
+    Err str -> str
+    Ok ns -> ns |> intsToISBN |> fromISBN |> List.filter (List.isEmpty >> not) |> List.map intsToString |> String.join "-"
+  
+  -- String -> String
+  to10  = stringToInts >> conv10 >> unhyphenate
+  to10h = stringToInts >> conv10 >> hyphenate
+  to13  = stringToInts >> conv13 >> unhyphenate
+  to13h = stringToInts >> conv13 >> hyphenate
+  
+  to10m   = String.lines >> List.map to10  >>  String.join "\n"
+  to10mh  = String.lines >> List.map to10h >>  String.join "\n"
+  to13m   = String.lines >> List.map to13  >>  String.join "\n"
+  to13mh  = String.lines >> List.map to13h >>  String.join "\n"
+  
+  getPub : ISBN -> String
+  getPub isbn =
+    let
+      key  = intsToString isbn.publisher
+      name = Dict.get key dictPub
+    in
+      case name of
+        Just s  -> if isbn.nation == [4] then s else "（外国）"
+        Nothing -> if isbn.nation == [4] then "（不明）: " ++ key else "（外国）: " ++ key
+  
+  getNation : ISBN -> String
+  getNation isbn =
+    let
+      key  = (if isbn.header==[] then "978" else intsToString isbn.header)++ "-" ++ (intsToString isbn.nation)
+      name = Dict.get key dictNation
+    in
+      case name of
+        Just s -> s
+        Nothing -> "unallocated: " ++ key
+  
+  dictHeader : List String
+  dictHeader = ["978-0","978-1","978-2","978-3","978-4","978-5","978-600","978-601","978-602","978-603","978-604","978-605","978-606","978-607","978-608","978-609","978-611","978-612","978-613","978-614","978-615","978-616","978-617","978-618","978-619","978-620","978-621","978-7","978-80","978-81","978-82","978-83","978-84","978-85","978-86","978-87","978-88","978-89","978-90","978-91","978-92","978-93","978-94"] -- abbreviated
+  dictNation : Dict.Dict String String
+  dictNation = Dict.fromList [("978-0","English"),("978-1","English"),("978-2","French"),("978-3","German"),("978-4","Japan"),("978-5","former USSR"),("978-600","Iran"),("978-601","Kazakhstan"),("978-602","Indonesia"),("978-603","Saudi Arabia"),("978-604","Vietnam"),("978-605","Turkey"),("978-606","Romania"),("978-607","Mexico"),("978-608","Macedonia"),("978-609","Lithuania"),("978-611","Thailand"),("978-612","Peru"),("978-613","Mauritius"),("978-614","Lebanon"),("978-615","Hungary"),("978-616","Thailand"),("978-617","Ukraine"),("978-618","Greece"),("978-619","Bulgaria"),("978-620","Mauritius"),("978-621","Philippines"),("978-622","Iran"),("978-623","Indonesia"),("978-65","Brazil"),("978-7","China")] -- abbreviated
+  dictRange : Dict.Dict String (List (List Int))
+  dictRange = Dict.fromList [("978-0" , [[0,1999999,2],[2000000,2279999,3],[2280000,2289999,4],[2290000,6479999,3],[6480000,6489999,7],[6490000,6999999,3],[7000000,8499999,4],[8500000,8999999,5],[9000000,9499999,6],[9500000,9999999,7]]),("978-1" , [[0,999999,2],[1000000,3999999,3],[4000000,5499999,4],[5500000,7319999,5],[7320000,7399999,7],[7400000,7749999,5],[7750000,7753999,7],[7754000,8697999,5],[8698000,9729999,6],[9730000,9877999,4],[9878000,9989999,6],[9990000,9999999,7]]),("978-2" , [[0,1999999,2],[2000000,3499999,3],[3500000,3999999,5],[4000000,6999999,3],[7000000,8399999,4],[8400000,8999999,5],[9000000,9199429,6],[9199430,9199689,7],[9199690,9499999,6],[9500000,9999999,7]]),("978-3" , [[0,299999,2],[300000,339999,3],[340000,369999,4],[370000,399999,5],[400000,1999999,2],[2000000,6999999,3],[7000000,8499999,4],[8500000,8999999,5],[9000000,9499999,6],[9500000,9539999,7],[9540000,9699999,5],[9700000,9899999,7],[9900000,9949999,5],[9950000,9999999,5]]),("978-4" , [[0,1999999,2],[2000000,6999999,3],[7000000,8499999,4],[8500000,8999999,5],[9000000,9499999,6],[9500000,9999999,7]])] -- abbreviated
+  dictPub : Dict.Dict String String
+  dictPub = Dict.fromList [ ("00","岩波書店"),("01","旺文社"),("02","朝日新聞社"),("03","偕成社"),("04","角川書店"),("05","学習研究社"),("06","講談社"),("07","主婦の友社"),("08","集英社"),("09","小学館"),("10","新潮社"),("11","全音楽譜社"),("12","中央公論新社"),("13","東京大学出版会"),("14","日本放送出版協会(ＮＨＫ出版)"),("15","早川書房"),("16","文藝春秋"),("17","国立印刷局"),("18","明治図書出版"),("19","徳間書店")] -- abbreviated
+  
+
+
+ </code>
+ </pre>
+ </div>
 </body>
 <script>
   const so = document.getElementById("source");
