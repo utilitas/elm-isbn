@@ -4973,7 +4973,10 @@ var elm$core$Platform$Sub$none = elm$core$Platform$Sub$batch(_List_Nil);
 var author$project$Main$subscriptions = function (model) {
 	return elm$core$Platform$Sub$none;
 };
-var author$project$Main$Loading = {$: 'Loading'};
+var author$project$Main$Loading = F2(
+	function (a, b) {
+		return {$: 'Loading', a: a, b: b};
+	});
 var author$project$Main$GotBookInfo = function (a) {
 	return {$: 'GotBookInfo', a: a};
 };
@@ -22810,12 +22813,15 @@ var author$project$Main$getBooksInfo = function () {
 		elm$core$Platform$Cmd$batch);
 }();
 var author$project$Main$makeEmptyBook = function (n) {
-	return {authors: '', input: '　', isbn13: '', nation: '', order: n, pubdate: '', publisher: '', remark: '', title: ''};
+	return {authors: '', input: '\u00a0', isbn13: '', nation: '', order: n, pubdate: '', publisher: '', remark: '', title: ''};
 };
 var elm$core$List$sortBy = _List_sortBy;
 var elm$core$String$lines = _String_lines;
+var elm$core$String$trimRight = _String_trimRight;
 var author$project$Main$update = F2(
 	function (msg, model) {
+		var v = elm$core$List$length(model.books);
+		var m = elm$core$List$length(model.content);
 		var _enum = F3(
 			function (acc, n, list) {
 				_enum:
@@ -22847,7 +22853,8 @@ var author$project$Main$update = F2(
 						model,
 						{
 							content: enumerate(
-								elm$core$String$lines(newInput)),
+								elm$core$String$lines(
+									elm$core$String$trimRight(newInput))),
 							input: newInput
 						}),
 					elm$core$Platform$Cmd$none);
@@ -22862,13 +22869,15 @@ var author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{books: _List_Nil, status: author$project$Main$Loading, table: _List_Nil}),
+						{
+							books: _List_Nil,
+							status: A2(author$project$Main$Loading, m, 0),
+							table: _List_Nil
+						}),
 					author$project$Main$getBooksInfo(model.content));
 			default:
 				var result = msg.a;
-				if (_Utils_eq(
-					elm$core$List$length(model.content) - 1,
-					elm$core$List$length(model.books))) {
+				if (_Utils_eq(m - 1, v)) {
 					if (result.$ === 'Ok') {
 						var info = result.a;
 						return _Utils_Tuple2(
@@ -22906,7 +22915,7 @@ var author$project$Main$update = F2(
 								model,
 								{
 									books: A2(elm$core$List$cons, info, model.books),
-									status: author$project$Main$Loading
+									status: A2(author$project$Main$Loading, m, v)
 								}),
 							elm$core$Platform$Cmd$none);
 					} else {
@@ -22918,7 +22927,7 @@ var author$project$Main$update = F2(
 										[
 											author$project$Main$makeEmptyBook(0)
 										]),
-									status: author$project$Main$Loading
+									status: A2(author$project$Main$Loading, m, v)
 								}),
 							elm$core$Platform$Cmd$none);
 					}
@@ -23031,6 +23040,7 @@ var author$project$Main$to13mh = A2(
 		elm$core$Basics$composeR,
 		elm$core$List$map(author$project$Main$to13h),
 		elm$core$String$join('\n')));
+var author$project$Main$rectify = A2(elm$core$Basics$composeR, author$project$Main$stringToInts, author$project$Main$intsToString);
 var elm$html$Html$td = _VirtualDom_node('td');
 var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
@@ -23047,7 +23057,20 @@ var elm$html$Html$Attributes$stringProperty = F2(
 var elm$html$Html$Attributes$class = elm$html$Html$Attributes$stringProperty('className');
 var author$project$Main$viewBookInfo = function (model) {
 	var makeRow = function (book) {
-		var bk = (book.input === '') ? author$project$Main$makeEmptyBook(book.order) : book;
+		var bk = function () {
+			if (book.input === '') {
+				return author$project$Main$makeEmptyBook(book.order);
+			} else {
+				if (author$project$Main$rectify(book.input) === '') {
+					var nbk = author$project$Main$makeEmptyBook(book.order);
+					return _Utils_update(
+						nbk,
+						{input: book.input});
+				} else {
+					return book;
+				}
+			}
+		}();
 		return A2(
 			elm$html$Html$tr,
 			_List_Nil,
@@ -23194,6 +23217,7 @@ var elm$html$Html$div = _VirtualDom_node('div');
 var elm$html$Html$fieldset = _VirtualDom_node('fieldset');
 var elm$html$Html$h1 = _VirtualDom_node('h1');
 var elm$html$Html$label = _VirtualDom_node('label');
+var elm$html$Html$progress = _VirtualDom_node('progress');
 var elm$html$Html$table = _VirtualDom_node('table');
 var elm$html$Html$textarea = _VirtualDom_node('textarea');
 var elm$html$Html$Attributes$cols = function (n) {
@@ -23202,6 +23226,7 @@ var elm$html$Html$Attributes$cols = function (n) {
 		'cols',
 		elm$core$String$fromInt(n));
 };
+var elm$html$Html$Attributes$max = elm$html$Html$Attributes$stringProperty('max');
 var elm$html$Html$Attributes$placeholder = elm$html$Html$Attributes$stringProperty('placeholder');
 var elm$virtual_dom$VirtualDom$property = F2(
 	function (key, value) {
@@ -23413,12 +23438,37 @@ var author$project$Main$view = function (model) {
 							[
 								elm$html$Html$Events$onClick(author$project$Main$Retrieve),
 								elm$html$Html$Attributes$class(
-								_Utils_eq(model.status, author$project$Main$Loading) ? 'button is-loading' : 'button')
+								_Utils_eq(model.status, author$project$Main$Done) ? 'button' : 'button is-loading')
 							]),
 						_List_fromArray(
 							[
 								elm$html$Html$text('書籍情報を取得する')
 							])),
+						function () {
+						var _n0 = model.status;
+						if (_n0.$ === 'Done') {
+							return A2(
+								elm$html$Html$progress,
+								_List_fromArray(
+									[
+										A2(elm$html$Html$Attributes$style, 'display', 'none')
+									]),
+								_List_Nil);
+						} else {
+							var m = _n0.a;
+							var v = _n0.b;
+							return A2(
+								elm$html$Html$progress,
+								_List_fromArray(
+									[
+										elm$html$Html$Attributes$max(
+										elm$core$String$fromInt(m)),
+										elm$html$Html$Attributes$value(
+										elm$core$String$fromInt(v))
+									]),
+								_List_Nil);
+						}
+					}(),
 						A2(elm$html$Html$br, _List_Nil, _List_Nil),
 						A2(
 						elm$html$Html$table,

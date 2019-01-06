@@ -1,14 +1,51 @@
 import Browser exposing (element)
-import Html exposing ( Html, Attribute, br, div, input, text, textarea, label
-                     , legend, fieldset, tr, td, th, table, button, img, h1)
-import Html.Attributes exposing ( style, property, cols, rows, readonly
-                                , placeholder, value, attribute, src, class)
-import Html.Events exposing (onClick, onInput, on)
-import Json.Decode as Decode
-import Json.Decode exposing (Decoder, field, index, string, list)
-import Json.Encode as Encode
 import Dict
+import Html exposing ( Html
+                     , Attribute
+                     , br
+                     , button
+                     , div
+                     , fieldset
+                     , h1
+                     , img
+                     , input
+                     , label
+                     , legend
+                     , table
+                     , text
+                     , textarea
+                     , td
+                     , th
+                     , tr
+                     , progress
+                     )
+import Html.Attributes exposing ( attribute
+                                , class
+                                , cols
+                                , max
+                                , placeholder
+                                , property
+                                , readonly
+                                , rows                               
+                                , src
+                                , style                                
+                                , value
+                                )
+import Html.Events exposing ( on
+                            , onClick
+                            , onInput
+                            )
 import Http
+import Json.Decode as Decode
+import Json.Decode exposing (Decoder
+                            , field
+                            , index
+                            , list
+                            , string
+                            )
+import Json.Encode as Encode
+
+
 
 -- MAIN
 main = Browser.element { init = init
@@ -39,7 +76,7 @@ type alias Book = { order  : Int
 
 makeEmptyBook : Int -> Book
 makeEmptyBook n = { order = n
-                  , input = "　"
+                  , input = "\u{00A0}"
                   , isbn13 = ""
                   , nation = ""
                   , publisher = ""
@@ -49,7 +86,7 @@ makeEmptyBook n = { order = n
                   , remark = ""
                   }
 
-type Status = Loading | Done
+type Status = Loading Int Int | Done
 
 init : () -> (Model, Cmd Msg)
 init _ = ( { input = ""
@@ -75,20 +112,24 @@ update msg model =
     enum acc n list = case list of
       (x::xs) ->  enum ((n,x)::acc) (n+1) xs
       []      ->  List.reverse acc 
+    m = List.length model.content
+    v = List.length model.books
   in
     case msg of
-      Change newInput -> ({ model | input=newInput, content=(newInput|>String.lines|>enumerate) }, Cmd.none)
+      Change newInput -> ({ model | input=newInput
+                                  , content=(newInput|>String.trimRight|>String.lines|>enumerate) }
+                         , Cmd.none)
       Scroll newOffset -> ({ model | offset=newOffset}, Cmd.none)
-      Retrieve -> ({ model| books=[], table=[], status = Loading }, getBooksInfo model.content)
-      GotBookInfo result -> 
-        if (List.length model.content)-1 == (List.length model.books) 
+      Retrieve -> ({ model| books=[], table=[], status = Loading m 0}, getBooksInfo model.content)
+      GotBookInfo result ->
+        if m-1 == v -- i.e. if the following retrieval is the last of all 
           then case result of
             Ok info -> ({model| table = List.sortBy .order (info::model.books)
                               , books = info::model.books, status = Done}, Cmd.none)
             Err _   -> ({model| table = [makeEmptyBook 0], status = Done}, Cmd.none)
           else  case result of
-            Ok info -> ({model| books = info::model.books, status = Loading}, Cmd.none)
-            Err _   -> ({model| books = [makeEmptyBook 0], status = Loading}, Cmd.none)
+            Ok info -> ({model| books = info::model.books, status = Loading m v}, Cmd.none)
+            Err _   -> ({model| books = [makeEmptyBook 0], status = Loading m v}, Cmd.none)
 
 
 onScroll : (Float -> msg) -> Attribute msg
@@ -152,9 +193,12 @@ view model =
     , br [] []
     , div []
         [ button [ onClick Retrieve
-                 , class (if model.status == Loading then "button is-loading" else "button")
+                 , class (if model.status == Done then "button" else "button is-loading")
                  ]
-                 [ text "書籍情報を取得する" ]
+                 [ text "書籍情報を取得する"]
+        , case model.status of
+            Done -> progress [style "display" "none"] []
+            Loading m v -> progress [max (String.fromInt  m), value (String.fromInt v)] []
         , br [] []
         , table [class "table is-bordered is-striped"] (viewBookInfo model)
         ]
@@ -166,7 +210,9 @@ viewBookInfo model =
         makeRow : Book -> (Html Msg)
         makeRow book = 
           let
-            bk = if book.input == "" then makeEmptyBook book.order else book
+            bk = if book.input == "" then (makeEmptyBook book.order)
+                 else if rectify book.input == "" then (let nbk = (makeEmptyBook book.order) in {nbk|input=book.input})
+                 else book
           in
             tr [] [ td [class "has-text-centered"] [text bk.input]
                   , td [class "has-text-centered"] [text bk.isbn13]
@@ -243,7 +289,6 @@ bookDecoder n str =
 
 
 -- Codes concerning ISBN
-
 find : (a -> Bool) -> (List a) -> Maybe a
 find pred list = case list of 
   (x::xs) -> if pred x then Just x else find pred xs
@@ -272,7 +317,7 @@ stringToInts =
   in 
     String.toList >> List.filter isDigit >> List.map toInt
 
-rectify : String -> String -- (e.g. "１２３,456-78q９X " -> "123456789X")
+rectify : String -> String
 rectify = stringToInts >> intsToString
 
 -- ISBN checksums
