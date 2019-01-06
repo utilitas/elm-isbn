@@ -196,9 +196,9 @@ getBooksInfo =
                              , isbn13=to13h str
                              , nation = getNation (stringToISBN str)
                              , publisher = getPub (stringToISBN str)
-                             , pubdate = err
-                             , authors = err
-                             , title = err
+                             , pubdate = ""
+                             , authors = ""
+                             , title = ""
                              , remark = err
                              }
     expectISBN : Int -> String -> (Result Http.Error Book -> Msg) -> Decoder Book -> Http.Expect Msg
@@ -272,7 +272,7 @@ stringToInts =
   in 
     String.toList >> List.filter isDigit >> List.map toInt
 
-rectify : String -> String
+rectify : String -> String -- (e.g. "１２３,456-78q９X " -> "123456789X")
 rectify = stringToInts >> intsToString
 
 -- ISBN checksums
@@ -399,7 +399,7 @@ getPub isbn =
   in
     case name of
       Just s  -> if isbn.nation == [4] then s else "（外国）"
-      Nothing -> if isbn.nation == [4] then "（不明）: " ++ key else "（外国）: " ++ key
+      Nothing -> if isbn.nation == [4] then "（不明:" ++ key ++ ")" else "（外国:" ++ key ++ ")"
 
 getNation : ISBN -> String
 getNation isbn =

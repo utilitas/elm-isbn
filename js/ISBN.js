@@ -18161,7 +18161,7 @@ var author$project$Main$getPub = function (isbn) {
 		return _Utils_eq(
 			isbn.nation,
 			_List_fromArray(
-				[4])) ? ('（不明）: ' + key) : ('（外国）: ' + key);
+				[4])) ? ('（不明:' + (key + ')')) : ('（外国:' + (key + ')'));
 	}
 };
 var author$project$Main$ISBN = F5(
@@ -22732,17 +22732,17 @@ var author$project$Main$getBooksInfo = function () {
 	var makeErrBook = F3(
 		function (n, str, err) {
 			return {
-				authors: err,
+				authors: '',
 				input: str,
 				isbn13: author$project$Main$to13h(str),
 				nation: author$project$Main$getNation(
 					author$project$Main$stringToISBN(str)),
 				order: n,
-				pubdate: err,
+				pubdate: '',
 				publisher: author$project$Main$getPub(
 					author$project$Main$stringToISBN(str)),
 				remark: err,
-				title: err
+				title: ''
 			};
 		});
 	var expectISBN = F4(

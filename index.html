@@ -227,9 +227,9 @@
                                , isbn13=to13h str
                                , nation = getNation (stringToISBN str)
                                , publisher = getPub (stringToISBN str)
-                               , pubdate = err
-                               , authors = err
-                               , title = err
+                               , pubdate = ""
+                               , authors = ""
+                               , title = ""
                                , remark = err
                                }
       expectISBN : Int -> String -> (Result Http.Error Book -> Msg) -> Decoder Book -> Http.Expect Msg
