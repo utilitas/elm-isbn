@@ -5470,6 +5470,3985 @@ var author$project$Main$getNation = function (isbn) {
 		return 'unallocated: ' + key;
 	}
 };
+var author$project$Main$ISBN = F5(
+	function (header, nation, publisher, book, digit) {
+		return {book: book, digit: digit, header: header, nation: nation, publisher: publisher};
+	});
+var author$project$Main$dictHeader = _List_fromArray(
+	['978-0', '978-1', '978-2', '978-3', '978-4', '978-5', '978-600', '978-601', '978-602', '978-603', '978-604', '978-605', '978-606', '978-607', '978-608', '978-609', '978-611', '978-612', '978-613', '978-614', '978-615', '978-616', '978-617', '978-618', '978-619', '978-620', '978-621', '978-7', '978-80', '978-81', '978-82', '978-83', '978-84', '978-85', '978-86', '978-87', '978-88', '978-89', '978-90', '978-91', '978-92', '978-93', '978-94', '978-950', '978-951', '978-952', '978-953', '978-954', '978-955', '978-956', '978-957', '978-958', '978-959', '978-960', '978-961', '978-962', '978-963', '978-964', '978-965', '978-966', '978-967', '978-968', '978-969', '978-970', '978-971', '978-972', '978-973', '978-974', '978-975', '978-976', '978-977', '978-978', '978-979', '978-980', '978-981', '978-982', '978-983', '978-984', '978-985', '978-986', '978-987', '978-988', '978-989', '978-9924', '978-9925', '978-9926', '978-9927', '978-9928', '978-9929', '978-9930', '978-9931', '978-9932', '978-9933', '978-9934', '978-9935', '978-9936', '978-9937', '978-9938', '978-9939', '978-9940', '978-9941', '978-9942', '978-9943', '978-9944', '978-9945', '978-9946', '978-9947', '978-9948', '978-9949', '978-9950', '978-9951', '978-9952', '978-9953', '978-9954', '978-9955', '978-9956', '978-9957', '978-9958', '978-9959', '978-9960', '978-9961', '978-9962', '978-9963', '978-9964', '978-9965', '978-9966', '978-9967', '978-9968', '978-9970', '978-9971', '978-9972', '978-9973', '978-9974', '978-9975', '978-9976', '978-9977', '978-9978', '978-9979', '978-9980', '978-9981', '978-9982', '978-9983', '978-9984', '978-9985', '978-9986', '978-9987', '978-9988', '978-9989', '978-99901', '978-99902', '978-99903', '978-99904', '978-99905', '978-99906', '978-99908', '978-99909', '978-99910', '978-99911', '978-99912', '978-99913', '978-99914', '978-99915', '978-99916', '978-99917', '978-99918', '978-99919', '978-99920', '978-99921', '978-99922', '978-99923', '978-99924', '978-99925', '978-99926', '978-99927', '978-99928', '978-99929', '978-99930', '978-99931', '978-99932', '978-99933', '978-99934', '978-99935', '978-99936', '978-99937', '978-99938', '978-99939', '978-99940', '978-99941', '978-99942', '978-99943', '978-99944', '978-99945', '978-99946', '978-99947', '978-99948', '978-99949', '978-99950', '978-99951', '978-99952', '978-99953', '978-99954', '978-99955', '978-99956', '978-99957', '978-99958', '978-99959', '978-99960', '978-99961', '978-99962', '978-99963', '978-99964', '978-99965', '978-99966', '978-99967', '978-99968', '978-99969', '978-99970', '978-99971', '978-99972', '978-99973', '978-99974', '978-99975', '978-99976', '978-99977', '978-99978', '978-99979', '979-10', '979-11', '979-12']);
+var author$project$Main$find = F2(
+	function (pred, list) {
+		find:
+		while (true) {
+			if (list.b) {
+				var x = list.a;
+				var xs = list.b;
+				if (pred(x)) {
+					return elm$core$Maybe$Just(x);
+				} else {
+					var $temp$pred = pred,
+						$temp$list = xs;
+					pred = $temp$pred;
+					list = $temp$list;
+					continue find;
+				}
+			} else {
+				return elm$core$Maybe$Nothing;
+			}
+		}
+	});
+var elm$core$Basics$ge = _Utils_ge;
+var author$project$Main$isDigit = function (_char) {
+	var num = elm$core$Char$toCode(_char);
+	return ((num >= 48) && (num <= 57)) || ((num === 88) || (((num >= 65296) && (num <= 65305)) || (num === 65336)));
+};
+var elm$core$List$filter = F2(
+	function (isGood, list) {
+		return A3(
+			elm$core$List$foldr,
+			F2(
+				function (x, xs) {
+					return isGood(x) ? A2(elm$core$List$cons, x, xs) : xs;
+				}),
+			_List_Nil,
+			list);
+	});
+var elm$core$String$foldr = _String_foldr;
+var elm$core$String$toList = function (string) {
+	return A3(elm$core$String$foldr, elm$core$List$cons, _List_Nil, string);
+};
+var author$project$Main$stringToInts = function () {
+	var toInt = function (_char) {
+		var _n0 = elm$core$Char$toCode(_char);
+		switch (_n0) {
+			case 88:
+				return 10;
+			case 65336:
+				return 10;
+			default:
+				var num = _n0;
+				return (num <= 57) ? (num - 48) : (num - 65296);
+		}
+	};
+	return A2(
+		elm$core$Basics$composeR,
+		elm$core$String$toList,
+		A2(
+			elm$core$Basics$composeR,
+			elm$core$List$filter(author$project$Main$isDigit),
+			elm$core$List$map(toInt)));
+}();
+var elm$core$List$drop = F2(
+	function (n, list) {
+		drop:
+		while (true) {
+			if (n <= 0) {
+				return list;
+			} else {
+				if (!list.b) {
+					return list;
+				} else {
+					var x = list.a;
+					var xs = list.b;
+					var $temp$n = n - 1,
+						$temp$list = xs;
+					n = $temp$n;
+					list = $temp$list;
+					continue drop;
+				}
+			}
+		}
+	});
+var elm$core$List$takeReverse = F3(
+	function (n, list, kept) {
+		takeReverse:
+		while (true) {
+			if (n <= 0) {
+				return kept;
+			} else {
+				if (!list.b) {
+					return kept;
+				} else {
+					var x = list.a;
+					var xs = list.b;
+					var $temp$n = n - 1,
+						$temp$list = xs,
+						$temp$kept = A2(elm$core$List$cons, x, kept);
+					n = $temp$n;
+					list = $temp$list;
+					kept = $temp$kept;
+					continue takeReverse;
+				}
+			}
+		}
+	});
+var elm$core$List$takeTailRec = F2(
+	function (n, list) {
+		return elm$core$List$reverse(
+			A3(elm$core$List$takeReverse, n, list, _List_Nil));
+	});
+var elm$core$List$takeFast = F3(
+	function (ctr, n, list) {
+		if (n <= 0) {
+			return _List_Nil;
+		} else {
+			var _n0 = _Utils_Tuple2(n, list);
+			_n0$1:
+			while (true) {
+				_n0$5:
+				while (true) {
+					if (!_n0.b.b) {
+						return list;
+					} else {
+						if (_n0.b.b.b) {
+							switch (_n0.a) {
+								case 1:
+									break _n0$1;
+								case 2:
+									var _n2 = _n0.b;
+									var x = _n2.a;
+									var _n3 = _n2.b;
+									var y = _n3.a;
+									return _List_fromArray(
+										[x, y]);
+								case 3:
+									if (_n0.b.b.b.b) {
+										var _n4 = _n0.b;
+										var x = _n4.a;
+										var _n5 = _n4.b;
+										var y = _n5.a;
+										var _n6 = _n5.b;
+										var z = _n6.a;
+										return _List_fromArray(
+											[x, y, z]);
+									} else {
+										break _n0$5;
+									}
+								default:
+									if (_n0.b.b.b.b && _n0.b.b.b.b.b) {
+										var _n7 = _n0.b;
+										var x = _n7.a;
+										var _n8 = _n7.b;
+										var y = _n8.a;
+										var _n9 = _n8.b;
+										var z = _n9.a;
+										var _n10 = _n9.b;
+										var w = _n10.a;
+										var tl = _n10.b;
+										return (ctr > 1000) ? A2(
+											elm$core$List$cons,
+											x,
+											A2(
+												elm$core$List$cons,
+												y,
+												A2(
+													elm$core$List$cons,
+													z,
+													A2(
+														elm$core$List$cons,
+														w,
+														A2(elm$core$List$takeTailRec, n - 4, tl))))) : A2(
+											elm$core$List$cons,
+											x,
+											A2(
+												elm$core$List$cons,
+												y,
+												A2(
+													elm$core$List$cons,
+													z,
+													A2(
+														elm$core$List$cons,
+														w,
+														A3(elm$core$List$takeFast, ctr + 1, n - 4, tl)))));
+									} else {
+										break _n0$5;
+									}
+							}
+						} else {
+							if (_n0.a === 1) {
+								break _n0$1;
+							} else {
+								break _n0$5;
+							}
+						}
+					}
+				}
+				return list;
+			}
+			var _n1 = _n0.b;
+			var x = _n1.a;
+			return _List_fromArray(
+				[x]);
+		}
+	});
+var elm$core$List$take = F2(
+	function (n, list) {
+		return A3(elm$core$List$takeFast, 0, n, list);
+	});
+var elm$core$String$length = _String_length;
+var elm$core$String$slice = _String_slice;
+var elm$core$String$dropLeft = F2(
+	function (n, string) {
+		return (n < 1) ? string : A3(
+			elm$core$String$slice,
+			n,
+			elm$core$String$length(string),
+			string);
+	});
+var elm$core$String$startsWith = _String_startsWith;
+var author$project$Main$divideNation = function (isbn) {
+	var digits = isbn.book;
+	var len = elm$core$List$length(digits);
+	var header = A2(elm$core$List$take, len - 10, digits);
+	var digit = A2(elm$core$List$drop, len - 1, digits);
+	var body = A2(
+		elm$core$List$take,
+		9,
+		A2(elm$core$List$drop, len - 10, digits));
+	var candidate = ((len === 10) ? '978' : '') + (author$project$Main$intsToString(header) + ('-' + author$project$Main$intsToString(
+		A2(elm$core$List$take, 5, body))));
+	var key = A2(
+		author$project$Main$find,
+		function (k) {
+			return A2(elm$core$String$startsWith, k, candidate);
+		},
+		author$project$Main$dictHeader);
+	var nation = function () {
+		if (key.$ === 'Nothing') {
+			return _List_Nil;
+		} else {
+			var k = key.a;
+			return author$project$Main$stringToInts(
+				A2(elm$core$String$dropLeft, 4, k));
+		}
+	}();
+	var book = A2(
+		elm$core$List$drop,
+		elm$core$List$length(nation),
+		body);
+	return A5(author$project$Main$ISBN, header, nation, _List_Nil, book, digit);
+};
+var author$project$Main$dictRange = elm$core$Dict$fromList(
+	_List_fromArray(
+		[
+			_Utils_Tuple2(
+			'978-0',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 2]),
+					_List_fromArray(
+					[2000000, 2279999, 3]),
+					_List_fromArray(
+					[2280000, 2289999, 4]),
+					_List_fromArray(
+					[2290000, 6479999, 3]),
+					_List_fromArray(
+					[6480000, 6489999, 7]),
+					_List_fromArray(
+					[6490000, 6999999, 3]),
+					_List_fromArray(
+					[7000000, 8499999, 4]),
+					_List_fromArray(
+					[8500000, 8999999, 5]),
+					_List_fromArray(
+					[9000000, 9499999, 6]),
+					_List_fromArray(
+					[9500000, 9999999, 7])
+				])),
+			_Utils_Tuple2(
+			'978-1',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 999999, 2]),
+					_List_fromArray(
+					[1000000, 3999999, 3]),
+					_List_fromArray(
+					[4000000, 5499999, 4]),
+					_List_fromArray(
+					[5500000, 7319999, 5]),
+					_List_fromArray(
+					[7320000, 7399999, 7]),
+					_List_fromArray(
+					[7400000, 7749999, 5]),
+					_List_fromArray(
+					[7750000, 7753999, 7]),
+					_List_fromArray(
+					[7754000, 8697999, 5]),
+					_List_fromArray(
+					[8698000, 9729999, 6]),
+					_List_fromArray(
+					[9730000, 9877999, 4]),
+					_List_fromArray(
+					[9878000, 9989999, 6]),
+					_List_fromArray(
+					[9990000, 9999999, 7])
+				])),
+			_Utils_Tuple2(
+			'978-2',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 2]),
+					_List_fromArray(
+					[2000000, 3499999, 3]),
+					_List_fromArray(
+					[3500000, 3999999, 5]),
+					_List_fromArray(
+					[4000000, 6999999, 3]),
+					_List_fromArray(
+					[7000000, 8399999, 4]),
+					_List_fromArray(
+					[8400000, 8999999, 5]),
+					_List_fromArray(
+					[9000000, 9199429, 6]),
+					_List_fromArray(
+					[9199430, 9199689, 7]),
+					_List_fromArray(
+					[9199690, 9499999, 6]),
+					_List_fromArray(
+					[9500000, 9999999, 7])
+				])),
+			_Utils_Tuple2(
+			'978-3',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 299999, 2]),
+					_List_fromArray(
+					[300000, 339999, 3]),
+					_List_fromArray(
+					[340000, 369999, 4]),
+					_List_fromArray(
+					[370000, 399999, 5]),
+					_List_fromArray(
+					[400000, 1999999, 2]),
+					_List_fromArray(
+					[2000000, 6999999, 3]),
+					_List_fromArray(
+					[7000000, 8499999, 4]),
+					_List_fromArray(
+					[8500000, 8999999, 5]),
+					_List_fromArray(
+					[9000000, 9499999, 6]),
+					_List_fromArray(
+					[9500000, 9539999, 7]),
+					_List_fromArray(
+					[9540000, 9699999, 5]),
+					_List_fromArray(
+					[9700000, 9899999, 7]),
+					_List_fromArray(
+					[9900000, 9949999, 5]),
+					_List_fromArray(
+					[9950000, 9999999, 5])
+				])),
+			_Utils_Tuple2(
+			'978-4',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 2]),
+					_List_fromArray(
+					[2000000, 6999999, 3]),
+					_List_fromArray(
+					[7000000, 8499999, 4]),
+					_List_fromArray(
+					[8500000, 8999999, 5]),
+					_List_fromArray(
+					[9000000, 9499999, 6]),
+					_List_fromArray(
+					[9500000, 9999999, 7])
+				])),
+			_Utils_Tuple2(
+			'978-5',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 49999, 5]),
+					_List_fromArray(
+					[50000, 99999, 4]),
+					_List_fromArray(
+					[100000, 1999999, 2]),
+					_List_fromArray(
+					[2000000, 4209999, 3]),
+					_List_fromArray(
+					[4210000, 4299999, 4]),
+					_List_fromArray(
+					[4300000, 4309999, 3]),
+					_List_fromArray(
+					[4310000, 4399999, 4]),
+					_List_fromArray(
+					[4400000, 4409999, 3]),
+					_List_fromArray(
+					[4410000, 4499999, 4]),
+					_List_fromArray(
+					[4500000, 6039999, 3]),
+					_List_fromArray(
+					[6040000, 6049999, 7]),
+					_List_fromArray(
+					[6050000, 6999999, 3]),
+					_List_fromArray(
+					[7000000, 8499999, 4]),
+					_List_fromArray(
+					[8500000, 8999999, 5]),
+					_List_fromArray(
+					[9000000, 9099999, 6]),
+					_List_fromArray(
+					[9100000, 9199999, 5]),
+					_List_fromArray(
+					[9200000, 9299999, 4]),
+					_List_fromArray(
+					[9300000, 9499999, 5]),
+					_List_fromArray(
+					[9500000, 9500999, 7]),
+					_List_fromArray(
+					[9501000, 9799999, 4]),
+					_List_fromArray(
+					[9800000, 9899999, 5]),
+					_List_fromArray(
+					[9900000, 9909999, 7]),
+					_List_fromArray(
+					[9910000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-600',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 999999, 2]),
+					_List_fromArray(
+					[1000000, 4999999, 3]),
+					_List_fromArray(
+					[5000000, 8999999, 4]),
+					_List_fromArray(
+					[9000000, 9999999, 5])
+				])),
+			_Utils_Tuple2(
+			'978-601',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 2]),
+					_List_fromArray(
+					[2000000, 6999999, 3]),
+					_List_fromArray(
+					[7000000, 7999999, 4]),
+					_List_fromArray(
+					[8000000, 8499999, 5]),
+					_List_fromArray(
+					[8500000, 9999999, 2])
+				])),
+			_Utils_Tuple2(
+			'978-602',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 799999, 2]),
+					_List_fromArray(
+					[800000, 899999, 4]),
+					_List_fromArray(
+					[900000, 1099999, 4]),
+					_List_fromArray(
+					[1100000, 1199999, 4]),
+					_List_fromArray(
+					[1200000, 1399999, 4]),
+					_List_fromArray(
+					[1400000, 1499999, 5]),
+					_List_fromArray(
+					[1500000, 1699999, 4]),
+					_List_fromArray(
+					[1700000, 1799999, 5]),
+					_List_fromArray(
+					[1800000, 1899999, 5]),
+					_List_fromArray(
+					[1900000, 1999999, 5]),
+					_List_fromArray(
+					[2000000, 5999999, 3]),
+					_List_fromArray(
+					[6000000, 6199999, 5]),
+					_List_fromArray(
+					[6200000, 6749999, 4]),
+					_List_fromArray(
+					[6750000, 6999999, 4]),
+					_List_fromArray(
+					[7000000, 7499999, 5]),
+					_List_fromArray(
+					[7500000, 7999999, 4]),
+					_List_fromArray(
+					[8000000, 9499999, 4]),
+					_List_fromArray(
+					[9500000, 9999999, 5])
+				])),
+			_Utils_Tuple2(
+			'978-603',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 499999, 2]),
+					_List_fromArray(
+					[500000, 4999999, 2]),
+					_List_fromArray(
+					[5000000, 7999999, 3]),
+					_List_fromArray(
+					[8000000, 8999999, 4]),
+					_List_fromArray(
+					[9000000, 9999999, 5])
+				])),
+			_Utils_Tuple2(
+			'978-604',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 4999999, 1]),
+					_List_fromArray(
+					[5000000, 8999999, 2]),
+					_List_fromArray(
+					[9000000, 9799999, 3]),
+					_List_fromArray(
+					[9800000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-605',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 99999, 0]),
+					_List_fromArray(
+					[100000, 299999, 2]),
+					_List_fromArray(
+					[300000, 399999, 3]),
+					_List_fromArray(
+					[400000, 999999, 2]),
+					_List_fromArray(
+					[1000000, 1999999, 3]),
+					_List_fromArray(
+					[2000000, 2399999, 4]),
+					_List_fromArray(
+					[2400000, 3999999, 3]),
+					_List_fromArray(
+					[4000000, 5999999, 4]),
+					_List_fromArray(
+					[6000000, 8999999, 5]),
+					_List_fromArray(
+					[9000000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-606',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 999999, 1]),
+					_List_fromArray(
+					[1000000, 4999999, 2]),
+					_List_fromArray(
+					[5000000, 7999999, 3]),
+					_List_fromArray(
+					[8000000, 9099999, 4]),
+					_List_fromArray(
+					[9100000, 9199999, 3]),
+					_List_fromArray(
+					[9200000, 9749999, 5]),
+					_List_fromArray(
+					[9750000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-607',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 3999999, 2]),
+					_List_fromArray(
+					[4000000, 7499999, 3]),
+					_List_fromArray(
+					[7500000, 9499999, 4]),
+					_List_fromArray(
+					[9500000, 9999999, 5])
+				])),
+			_Utils_Tuple2(
+			'978-608',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 999999, 1]),
+					_List_fromArray(
+					[1000000, 1999999, 2]),
+					_List_fromArray(
+					[2000000, 4499999, 3]),
+					_List_fromArray(
+					[4500000, 6499999, 4]),
+					_List_fromArray(
+					[6500000, 6999999, 5]),
+					_List_fromArray(
+					[7000000, 9999999, 1])
+				])),
+			_Utils_Tuple2(
+			'978-609',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 3999999, 2]),
+					_List_fromArray(
+					[4000000, 7999999, 3]),
+					_List_fromArray(
+					[8000000, 9499999, 4]),
+					_List_fromArray(
+					[9500000, 9999999, 5])
+				])),
+			_Utils_Tuple2(
+			'978-611',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 9999999, 0])
+				])),
+			_Utils_Tuple2(
+			'978-612',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 2999999, 2]),
+					_List_fromArray(
+					[3000000, 3999999, 3]),
+					_List_fromArray(
+					[4000000, 4499999, 4]),
+					_List_fromArray(
+					[4500000, 4999999, 5]),
+					_List_fromArray(
+					[5000000, 9999999, 2])
+				])),
+			_Utils_Tuple2(
+			'978-613',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 9999999, 1])
+				])),
+			_Utils_Tuple2(
+			'978-614',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 3999999, 2]),
+					_List_fromArray(
+					[4000000, 7999999, 3]),
+					_List_fromArray(
+					[8000000, 9499999, 4]),
+					_List_fromArray(
+					[9500000, 9999999, 5])
+				])),
+			_Utils_Tuple2(
+			'978-615',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 999999, 2]),
+					_List_fromArray(
+					[1000000, 4999999, 3]),
+					_List_fromArray(
+					[5000000, 7999999, 4]),
+					_List_fromArray(
+					[8000000, 8999999, 5]),
+					_List_fromArray(
+					[9000000, 9999999, 0])
+				])),
+			_Utils_Tuple2(
+			'978-616',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 2]),
+					_List_fromArray(
+					[2000000, 6999999, 3]),
+					_List_fromArray(
+					[7000000, 8999999, 4]),
+					_List_fromArray(
+					[9000000, 9999999, 5])
+				])),
+			_Utils_Tuple2(
+			'978-617',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 4999999, 2]),
+					_List_fromArray(
+					[5000000, 6999999, 3]),
+					_List_fromArray(
+					[7000000, 8999999, 4]),
+					_List_fromArray(
+					[9000000, 9999999, 5])
+				])),
+			_Utils_Tuple2(
+			'978-618',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 2]),
+					_List_fromArray(
+					[2000000, 4999999, 3]),
+					_List_fromArray(
+					[5000000, 7999999, 4]),
+					_List_fromArray(
+					[8000000, 9999999, 5])
+				])),
+			_Utils_Tuple2(
+			'978-619',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1499999, 2]),
+					_List_fromArray(
+					[1500000, 6999999, 3]),
+					_List_fromArray(
+					[7000000, 8999999, 4]),
+					_List_fromArray(
+					[9000000, 9999999, 5])
+				])),
+			_Utils_Tuple2(
+			'978-620',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 9999999, 1])
+				])),
+			_Utils_Tuple2(
+			'978-621',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 2999999, 2]),
+					_List_fromArray(
+					[3000000, 3999999, 0]),
+					_List_fromArray(
+					[4000000, 5999999, 3]),
+					_List_fromArray(
+					[6000000, 7999999, 0]),
+					_List_fromArray(
+					[8000000, 8999999, 4]),
+					_List_fromArray(
+					[9000000, 9499999, 0]),
+					_List_fromArray(
+					[9500000, 9999999, 5])
+				])),
+			_Utils_Tuple2(
+			'978-7',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 999999, 2]),
+					_List_fromArray(
+					[1000000, 4999999, 3]),
+					_List_fromArray(
+					[5000000, 7999999, 4]),
+					_List_fromArray(
+					[8000000, 8999999, 5]),
+					_List_fromArray(
+					[9000000, 9999999, 6])
+				])),
+			_Utils_Tuple2(
+			'978-80',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 2]),
+					_List_fromArray(
+					[2000000, 6999999, 3]),
+					_List_fromArray(
+					[7000000, 8499999, 4]),
+					_List_fromArray(
+					[8500000, 8999999, 5]),
+					_List_fromArray(
+					[9000000, 9999999, 6])
+				])),
+			_Utils_Tuple2(
+			'978-81',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 2]),
+					_List_fromArray(
+					[2000000, 6999999, 3]),
+					_List_fromArray(
+					[7000000, 8499999, 4]),
+					_List_fromArray(
+					[8500000, 8999999, 5]),
+					_List_fromArray(
+					[9000000, 9999999, 6])
+				])),
+			_Utils_Tuple2(
+			'978-82',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 2]),
+					_List_fromArray(
+					[2000000, 6899999, 3]),
+					_List_fromArray(
+					[6900000, 6999999, 6]),
+					_List_fromArray(
+					[7000000, 8999999, 4]),
+					_List_fromArray(
+					[9000000, 9899999, 5]),
+					_List_fromArray(
+					[9900000, 9999999, 6])
+				])),
+			_Utils_Tuple2(
+			'978-83',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 2]),
+					_List_fromArray(
+					[2000000, 5999999, 3]),
+					_List_fromArray(
+					[6000000, 6999999, 5]),
+					_List_fromArray(
+					[7000000, 8499999, 4]),
+					_List_fromArray(
+					[8500000, 8999999, 5]),
+					_List_fromArray(
+					[9000000, 9999999, 6])
+				])),
+			_Utils_Tuple2(
+			'978-84',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1399999, 2]),
+					_List_fromArray(
+					[1400000, 1499999, 3]),
+					_List_fromArray(
+					[1500000, 1999999, 5]),
+					_List_fromArray(
+					[2000000, 6999999, 3]),
+					_List_fromArray(
+					[7000000, 8499999, 4]),
+					_List_fromArray(
+					[8500000, 8999999, 5]),
+					_List_fromArray(
+					[9000000, 9199999, 4]),
+					_List_fromArray(
+					[9200000, 9239999, 6]),
+					_List_fromArray(
+					[9240000, 9299999, 5]),
+					_List_fromArray(
+					[9300000, 9499999, 6]),
+					_List_fromArray(
+					[9500000, 9699999, 5]),
+					_List_fromArray(
+					[9700000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-85',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 2]),
+					_List_fromArray(
+					[2000000, 5499999, 3]),
+					_List_fromArray(
+					[5500000, 5999999, 4]),
+					_List_fromArray(
+					[6000000, 6999999, 5]),
+					_List_fromArray(
+					[7000000, 8499999, 4]),
+					_List_fromArray(
+					[8500000, 8999999, 5]),
+					_List_fromArray(
+					[9000000, 9249999, 6]),
+					_List_fromArray(
+					[9250000, 9449999, 5]),
+					_List_fromArray(
+					[9450000, 9599999, 4]),
+					_List_fromArray(
+					[9600000, 9799999, 2]),
+					_List_fromArray(
+					[9800000, 9999999, 5])
+				])),
+			_Utils_Tuple2(
+			'978-86',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 2999999, 2]),
+					_List_fromArray(
+					[3000000, 5999999, 3]),
+					_List_fromArray(
+					[6000000, 7999999, 4]),
+					_List_fromArray(
+					[8000000, 8999999, 5]),
+					_List_fromArray(
+					[9000000, 9999999, 6])
+				])),
+			_Utils_Tuple2(
+			'978-87',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 2999999, 2]),
+					_List_fromArray(
+					[3000000, 3999999, 0]),
+					_List_fromArray(
+					[4000000, 6499999, 3]),
+					_List_fromArray(
+					[6500000, 6999999, 0]),
+					_List_fromArray(
+					[7000000, 7999999, 4]),
+					_List_fromArray(
+					[8000000, 8499999, 0]),
+					_List_fromArray(
+					[8500000, 9499999, 5]),
+					_List_fromArray(
+					[9500000, 9699999, 0]),
+					_List_fromArray(
+					[9700000, 9999999, 6])
+				])),
+			_Utils_Tuple2(
+			'978-88',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 2]),
+					_List_fromArray(
+					[2000000, 3269999, 3]),
+					_List_fromArray(
+					[3270000, 3389999, 4]),
+					_List_fromArray(
+					[3390000, 5999999, 3]),
+					_List_fromArray(
+					[6000000, 8499999, 4]),
+					_List_fromArray(
+					[8500000, 8999999, 5]),
+					_List_fromArray(
+					[9000000, 9099999, 6]),
+					_List_fromArray(
+					[9100000, 9299999, 3]),
+					_List_fromArray(
+					[9300000, 9399999, 4]),
+					_List_fromArray(
+					[9400000, 9479999, 6]),
+					_List_fromArray(
+					[9480000, 9499999, 5]),
+					_List_fromArray(
+					[9500000, 9999999, 5])
+				])),
+			_Utils_Tuple2(
+			'978-89',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 2499999, 2]),
+					_List_fromArray(
+					[2500000, 5499999, 3]),
+					_List_fromArray(
+					[5500000, 8499999, 4]),
+					_List_fromArray(
+					[8500000, 9499999, 5]),
+					_List_fromArray(
+					[9500000, 9699999, 6]),
+					_List_fromArray(
+					[9700000, 9899999, 5]),
+					_List_fromArray(
+					[9900000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-90',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 2]),
+					_List_fromArray(
+					[2000000, 4999999, 3]),
+					_List_fromArray(
+					[5000000, 6999999, 4]),
+					_List_fromArray(
+					[7000000, 7999999, 5]),
+					_List_fromArray(
+					[8000000, 8499999, 6]),
+					_List_fromArray(
+					[8500000, 8999999, 4]),
+					_List_fromArray(
+					[9000000, 9099999, 2]),
+					_List_fromArray(
+					[9100000, 9399999, 0]),
+					_List_fromArray(
+					[9400000, 9499999, 2]),
+					_List_fromArray(
+					[9500000, 9999999, 0])
+				])),
+			_Utils_Tuple2(
+			'978-91',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 1]),
+					_List_fromArray(
+					[2000000, 4999999, 2]),
+					_List_fromArray(
+					[5000000, 6499999, 3]),
+					_List_fromArray(
+					[6500000, 6999999, 0]),
+					_List_fromArray(
+					[7000000, 7999999, 4]),
+					_List_fromArray(
+					[8000000, 8499999, 0]),
+					_List_fromArray(
+					[8500000, 9499999, 5]),
+					_List_fromArray(
+					[9500000, 9699999, 0]),
+					_List_fromArray(
+					[9700000, 9999999, 6])
+				])),
+			_Utils_Tuple2(
+			'978-92',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 5999999, 1]),
+					_List_fromArray(
+					[6000000, 7999999, 2]),
+					_List_fromArray(
+					[8000000, 8999999, 3]),
+					_List_fromArray(
+					[9000000, 9499999, 4]),
+					_List_fromArray(
+					[9500000, 9899999, 5]),
+					_List_fromArray(
+					[9900000, 9999999, 6])
+				])),
+			_Utils_Tuple2(
+			'978-93',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 999999, 2]),
+					_List_fromArray(
+					[1000000, 4999999, 3]),
+					_List_fromArray(
+					[5000000, 7999999, 4]),
+					_List_fromArray(
+					[8000000, 9499999, 5]),
+					_List_fromArray(
+					[9500000, 9999999, 6])
+				])),
+			_Utils_Tuple2(
+			'978-94',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 5999999, 3]),
+					_List_fromArray(
+					[6000000, 8999999, 4]),
+					_List_fromArray(
+					[9000000, 9999999, 5])
+				])),
+			_Utils_Tuple2(
+			'978-950',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 4999999, 2]),
+					_List_fromArray(
+					[5000000, 8999999, 3]),
+					_List_fromArray(
+					[9000000, 9899999, 4]),
+					_List_fromArray(
+					[9900000, 9999999, 5])
+				])),
+			_Utils_Tuple2(
+			'978-951',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 1]),
+					_List_fromArray(
+					[2000000, 5499999, 2]),
+					_List_fromArray(
+					[5500000, 8899999, 3]),
+					_List_fromArray(
+					[8900000, 9499999, 4]),
+					_List_fromArray(
+					[9500000, 9999999, 5])
+				])),
+			_Utils_Tuple2(
+			'978-952',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 2]),
+					_List_fromArray(
+					[2000000, 4999999, 3]),
+					_List_fromArray(
+					[5000000, 5999999, 4]),
+					_List_fromArray(
+					[6000000, 6599999, 2]),
+					_List_fromArray(
+					[6600000, 6699999, 4]),
+					_List_fromArray(
+					[6700000, 6999999, 5]),
+					_List_fromArray(
+					[7000000, 7999999, 4]),
+					_List_fromArray(
+					[8000000, 9499999, 2]),
+					_List_fromArray(
+					[9500000, 9899999, 4]),
+					_List_fromArray(
+					[9900000, 9999999, 5])
+				])),
+			_Utils_Tuple2(
+			'978-953',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 999999, 1]),
+					_List_fromArray(
+					[1000000, 1499999, 2]),
+					_List_fromArray(
+					[1500000, 5099999, 3]),
+					_List_fromArray(
+					[5100000, 5499999, 2]),
+					_List_fromArray(
+					[5500000, 5999999, 5]),
+					_List_fromArray(
+					[6000000, 9499999, 4]),
+					_List_fromArray(
+					[9500000, 9999999, 5])
+				])),
+			_Utils_Tuple2(
+			'978-954',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 2899999, 2]),
+					_List_fromArray(
+					[2900000, 2999999, 4]),
+					_List_fromArray(
+					[3000000, 7999999, 3]),
+					_List_fromArray(
+					[8000000, 8999999, 4]),
+					_List_fromArray(
+					[9000000, 9299999, 5]),
+					_List_fromArray(
+					[9300000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-955',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 4]),
+					_List_fromArray(
+					[2000000, 3799999, 2]),
+					_List_fromArray(
+					[3800000, 3899999, 5]),
+					_List_fromArray(
+					[3900000, 4099999, 4]),
+					_List_fromArray(
+					[4100000, 4399999, 5]),
+					_List_fromArray(
+					[4400000, 4499999, 5]),
+					_List_fromArray(
+					[4500000, 4999999, 4]),
+					_List_fromArray(
+					[5000000, 5499999, 5]),
+					_List_fromArray(
+					[5500000, 7199999, 3]),
+					_List_fromArray(
+					[7200000, 7499999, 4]),
+					_List_fromArray(
+					[7500000, 7999999, 4]),
+					_List_fromArray(
+					[8000000, 9499999, 4]),
+					_List_fromArray(
+					[9500000, 9999999, 5])
+				])),
+			_Utils_Tuple2(
+			'978-956',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 899999, 2]),
+					_List_fromArray(
+					[900000, 999999, 5]),
+					_List_fromArray(
+					[1000000, 1999999, 2]),
+					_List_fromArray(
+					[2000000, 5999999, 3]),
+					_List_fromArray(
+					[6000000, 6999999, 4]),
+					_List_fromArray(
+					[7000000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-957',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 299999, 2]),
+					_List_fromArray(
+					[300000, 499999, 4]),
+					_List_fromArray(
+					[500000, 1999999, 2]),
+					_List_fromArray(
+					[2000000, 2099999, 4]),
+					_List_fromArray(
+					[2100000, 2799999, 2]),
+					_List_fromArray(
+					[2800000, 3099999, 5]),
+					_List_fromArray(
+					[3100000, 4399999, 2]),
+					_List_fromArray(
+					[4400000, 8199999, 3]),
+					_List_fromArray(
+					[8200000, 9699999, 4]),
+					_List_fromArray(
+					[9700000, 9999999, 5])
+				])),
+			_Utils_Tuple2(
+			'978-958',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 5399999, 2]),
+					_List_fromArray(
+					[5400000, 5599999, 4]),
+					_List_fromArray(
+					[5600000, 5699999, 5]),
+					_List_fromArray(
+					[5700000, 5999999, 5]),
+					_List_fromArray(
+					[6000000, 7999999, 3]),
+					_List_fromArray(
+					[8000000, 9499999, 4]),
+					_List_fromArray(
+					[9500000, 9999999, 5])
+				])),
+			_Utils_Tuple2(
+			'978-959',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 2]),
+					_List_fromArray(
+					[2000000, 6999999, 3]),
+					_List_fromArray(
+					[7000000, 8499999, 4]),
+					_List_fromArray(
+					[8500000, 9999999, 5])
+				])),
+			_Utils_Tuple2(
+			'978-960',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 2]),
+					_List_fromArray(
+					[2000000, 6599999, 3]),
+					_List_fromArray(
+					[6600000, 6899999, 4]),
+					_List_fromArray(
+					[6900000, 6999999, 3]),
+					_List_fromArray(
+					[7000000, 8499999, 4]),
+					_List_fromArray(
+					[8500000, 9299999, 5]),
+					_List_fromArray(
+					[9300000, 9399999, 2]),
+					_List_fromArray(
+					[9400000, 9799999, 4]),
+					_List_fromArray(
+					[9800000, 9999999, 5])
+				])),
+			_Utils_Tuple2(
+			'978-961',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 2]),
+					_List_fromArray(
+					[2000000, 5999999, 3]),
+					_List_fromArray(
+					[6000000, 8999999, 4]),
+					_List_fromArray(
+					[9000000, 9499999, 5]),
+					_List_fromArray(
+					[9500000, 9999999, 0])
+				])),
+			_Utils_Tuple2(
+			'978-962',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 2]),
+					_List_fromArray(
+					[2000000, 6999999, 3]),
+					_List_fromArray(
+					[7000000, 8499999, 4]),
+					_List_fromArray(
+					[8500000, 8699999, 5]),
+					_List_fromArray(
+					[8700000, 8999999, 4]),
+					_List_fromArray(
+					[9000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-963',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 2]),
+					_List_fromArray(
+					[2000000, 6999999, 3]),
+					_List_fromArray(
+					[7000000, 8499999, 4]),
+					_List_fromArray(
+					[8500000, 8999999, 5]),
+					_List_fromArray(
+					[9000000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-964',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1499999, 2]),
+					_List_fromArray(
+					[1500000, 2499999, 3]),
+					_List_fromArray(
+					[2500000, 2999999, 4]),
+					_List_fromArray(
+					[3000000, 5499999, 3]),
+					_List_fromArray(
+					[5500000, 8999999, 4]),
+					_List_fromArray(
+					[9000000, 9699999, 5]),
+					_List_fromArray(
+					[9700000, 9899999, 3]),
+					_List_fromArray(
+					[9900000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-965',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 2]),
+					_List_fromArray(
+					[2000000, 5999999, 3]),
+					_List_fromArray(
+					[6000000, 6999999, 0]),
+					_List_fromArray(
+					[7000000, 7999999, 4]),
+					_List_fromArray(
+					[8000000, 8999999, 0]),
+					_List_fromArray(
+					[9000000, 9999999, 5])
+				])),
+			_Utils_Tuple2(
+			'978-966',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1299999, 2]),
+					_List_fromArray(
+					[1300000, 1399999, 3]),
+					_List_fromArray(
+					[1400000, 1499999, 2]),
+					_List_fromArray(
+					[1500000, 1699999, 4]),
+					_List_fromArray(
+					[1700000, 1999999, 3]),
+					_List_fromArray(
+					[2000000, 2789999, 4]),
+					_List_fromArray(
+					[2790000, 2899999, 3]),
+					_List_fromArray(
+					[2900000, 2999999, 4]),
+					_List_fromArray(
+					[3000000, 6999999, 3]),
+					_List_fromArray(
+					[7000000, 8999999, 4]),
+					_List_fromArray(
+					[9000000, 9099999, 5]),
+					_List_fromArray(
+					[9100000, 9499999, 3]),
+					_List_fromArray(
+					[9500000, 9799999, 5]),
+					_List_fromArray(
+					[9800000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-967',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 99999, 2]),
+					_List_fromArray(
+					[100000, 999999, 4]),
+					_List_fromArray(
+					[1000000, 1999999, 5]),
+					_List_fromArray(
+					[2000000, 2499999, 4]),
+					_List_fromArray(
+					[2500000, 2999999, 0]),
+					_List_fromArray(
+					[3000000, 4999999, 3]),
+					_List_fromArray(
+					[5000000, 5999999, 4]),
+					_List_fromArray(
+					[6000000, 8999999, 2]),
+					_List_fromArray(
+					[9000000, 9899999, 3]),
+					_List_fromArray(
+					[9900000, 9989999, 4]),
+					_List_fromArray(
+					[9990000, 9999999, 5])
+				])),
+			_Utils_Tuple2(
+			'978-968',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[100000, 3999999, 2]),
+					_List_fromArray(
+					[4000000, 4999999, 3]),
+					_List_fromArray(
+					[5000000, 7999999, 4]),
+					_List_fromArray(
+					[8000000, 8999999, 3]),
+					_List_fromArray(
+					[9000000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-969',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 1]),
+					_List_fromArray(
+					[2000000, 2299999, 2]),
+					_List_fromArray(
+					[2300000, 2399999, 5]),
+					_List_fromArray(
+					[2400000, 3999999, 2]),
+					_List_fromArray(
+					[4000000, 7499999, 3]),
+					_List_fromArray(
+					[7500000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-970',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[100000, 5999999, 2]),
+					_List_fromArray(
+					[6000000, 8999999, 3]),
+					_List_fromArray(
+					[9000000, 9099999, 4]),
+					_List_fromArray(
+					[9100000, 9699999, 5]),
+					_List_fromArray(
+					[9700000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-971',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 159999, 3]),
+					_List_fromArray(
+					[160000, 199999, 4]),
+					_List_fromArray(
+					[200000, 299999, 2]),
+					_List_fromArray(
+					[300000, 599999, 4]),
+					_List_fromArray(
+					[600000, 4999999, 2]),
+					_List_fromArray(
+					[5000000, 8499999, 3]),
+					_List_fromArray(
+					[8500000, 9099999, 4]),
+					_List_fromArray(
+					[9100000, 9599999, 5]),
+					_List_fromArray(
+					[9600000, 9699999, 4]),
+					_List_fromArray(
+					[9700000, 9899999, 2]),
+					_List_fromArray(
+					[9900000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-972',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 1]),
+					_List_fromArray(
+					[2000000, 5499999, 2]),
+					_List_fromArray(
+					[5500000, 7999999, 3]),
+					_List_fromArray(
+					[8000000, 9499999, 4]),
+					_List_fromArray(
+					[9500000, 9999999, 5])
+				])),
+			_Utils_Tuple2(
+			'978-973',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 999999, 1]),
+					_List_fromArray(
+					[1000000, 1699999, 3]),
+					_List_fromArray(
+					[1700000, 1999999, 4]),
+					_List_fromArray(
+					[2000000, 5499999, 2]),
+					_List_fromArray(
+					[5500000, 7599999, 3]),
+					_List_fromArray(
+					[7600000, 8499999, 4]),
+					_List_fromArray(
+					[8500000, 8899999, 5]),
+					_List_fromArray(
+					[8900000, 9499999, 4]),
+					_List_fromArray(
+					[9500000, 9999999, 5])
+				])),
+			_Utils_Tuple2(
+			'978-974',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 2]),
+					_List_fromArray(
+					[2000000, 6999999, 3]),
+					_List_fromArray(
+					[7000000, 8499999, 4]),
+					_List_fromArray(
+					[8500000, 8999999, 5]),
+					_List_fromArray(
+					[9000000, 9499999, 5]),
+					_List_fromArray(
+					[9500000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-975',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 199999, 5]),
+					_List_fromArray(
+					[200000, 2399999, 2]),
+					_List_fromArray(
+					[2400000, 2499999, 4]),
+					_List_fromArray(
+					[2500000, 5999999, 3]),
+					_List_fromArray(
+					[6000000, 9199999, 4]),
+					_List_fromArray(
+					[9200000, 9899999, 5]),
+					_List_fromArray(
+					[9900000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-976',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 3999999, 1]),
+					_List_fromArray(
+					[4000000, 5999999, 2]),
+					_List_fromArray(
+					[6000000, 7999999, 3]),
+					_List_fromArray(
+					[8000000, 9499999, 4]),
+					_List_fromArray(
+					[9500000, 9999999, 5])
+				])),
+			_Utils_Tuple2(
+			'978-977',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 2]),
+					_List_fromArray(
+					[2000000, 4999999, 3]),
+					_List_fromArray(
+					[5000000, 6999999, 4]),
+					_List_fromArray(
+					[7000000, 8499999, 3]),
+					_List_fromArray(
+					[8500000, 8999999, 5]),
+					_List_fromArray(
+					[9000000, 9999999, 2])
+				])),
+			_Utils_Tuple2(
+			'978-978',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 3]),
+					_List_fromArray(
+					[2000000, 2999999, 4]),
+					_List_fromArray(
+					[3000000, 7999999, 5]),
+					_List_fromArray(
+					[8000000, 8999999, 4]),
+					_List_fromArray(
+					[9000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-979',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 999999, 3]),
+					_List_fromArray(
+					[1000000, 1499999, 4]),
+					_List_fromArray(
+					[1500000, 1999999, 5]),
+					_List_fromArray(
+					[2000000, 2999999, 2]),
+					_List_fromArray(
+					[3000000, 3999999, 4]),
+					_List_fromArray(
+					[4000000, 7999999, 3]),
+					_List_fromArray(
+					[8000000, 9499999, 4]),
+					_List_fromArray(
+					[9500000, 9999999, 5])
+				])),
+			_Utils_Tuple2(
+			'978-980',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 2]),
+					_List_fromArray(
+					[2000000, 5999999, 3]),
+					_List_fromArray(
+					[6000000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-981',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1699999, 2]),
+					_List_fromArray(
+					[1700000, 1999999, 5]),
+					_List_fromArray(
+					[2000000, 2999999, 3]),
+					_List_fromArray(
+					[3000000, 3099999, 4]),
+					_List_fromArray(
+					[3100000, 3999999, 3]),
+					_List_fromArray(
+					[4000000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-982',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 999999, 2]),
+					_List_fromArray(
+					[1000000, 6999999, 3]),
+					_List_fromArray(
+					[7000000, 8999999, 2]),
+					_List_fromArray(
+					[9000000, 9799999, 4]),
+					_List_fromArray(
+					[9800000, 9999999, 5])
+				])),
+			_Utils_Tuple2(
+			'978-983',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 199999, 2]),
+					_List_fromArray(
+					[200000, 1999999, 3]),
+					_List_fromArray(
+					[2000000, 3999999, 4]),
+					_List_fromArray(
+					[4000000, 4499999, 5]),
+					_List_fromArray(
+					[4500000, 4999999, 2]),
+					_List_fromArray(
+					[5000000, 7999999, 2]),
+					_List_fromArray(
+					[8000000, 8999999, 3]),
+					_List_fromArray(
+					[9000000, 9899999, 4]),
+					_List_fromArray(
+					[9900000, 9999999, 5])
+				])),
+			_Utils_Tuple2(
+			'978-984',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 3999999, 2]),
+					_List_fromArray(
+					[4000000, 7999999, 3]),
+					_List_fromArray(
+					[8000000, 8999999, 4]),
+					_List_fromArray(
+					[9000000, 9999999, 5])
+				])),
+			_Utils_Tuple2(
+			'978-985',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 3999999, 2]),
+					_List_fromArray(
+					[4000000, 5999999, 3]),
+					_List_fromArray(
+					[6000000, 8999999, 4]),
+					_List_fromArray(
+					[9000000, 9999999, 5])
+				])),
+			_Utils_Tuple2(
+			'978-986',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1199999, 2]),
+					_List_fromArray(
+					[1200000, 5599999, 3]),
+					_List_fromArray(
+					[5600000, 7999999, 4]),
+					_List_fromArray(
+					[8000000, 9999999, 5])
+				])),
+			_Utils_Tuple2(
+			'978-987',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 999999, 2]),
+					_List_fromArray(
+					[1000000, 1999999, 4]),
+					_List_fromArray(
+					[2000000, 2999999, 5]),
+					_List_fromArray(
+					[3000000, 3599999, 2]),
+					_List_fromArray(
+					[3600000, 3999999, 4]),
+					_List_fromArray(
+					[4000000, 4199999, 4]),
+					_List_fromArray(
+					[4200000, 4399999, 2]),
+					_List_fromArray(
+					[4400000, 4499999, 4]),
+					_List_fromArray(
+					[4500000, 4899999, 5]),
+					_List_fromArray(
+					[4900000, 4999999, 4]),
+					_List_fromArray(
+					[5000000, 8999999, 3]),
+					_List_fromArray(
+					[9000000, 9499999, 4]),
+					_List_fromArray(
+					[9500000, 9999999, 5])
+				])),
+			_Utils_Tuple2(
+			'978-988',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1199999, 2]),
+					_List_fromArray(
+					[1200000, 1499999, 5]),
+					_List_fromArray(
+					[1500000, 1699999, 5]),
+					_List_fromArray(
+					[1700000, 1999999, 5]),
+					_List_fromArray(
+					[2000000, 7699999, 3]),
+					_List_fromArray(
+					[7700000, 7999999, 5]),
+					_List_fromArray(
+					[8000000, 9699999, 4]),
+					_List_fromArray(
+					[9700000, 9999999, 5])
+				])),
+			_Utils_Tuple2(
+			'978-989',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 1]),
+					_List_fromArray(
+					[2000000, 5499999, 2]),
+					_List_fromArray(
+					[5500000, 7999999, 3]),
+					_List_fromArray(
+					[8000000, 9499999, 4]),
+					_List_fromArray(
+					[9500000, 9999999, 5])
+				])),
+			_Utils_Tuple2(
+			'978-9924',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 2999999, 0]),
+					_List_fromArray(
+					[3000000, 3999999, 2]),
+					_List_fromArray(
+					[4000000, 4999999, 0]),
+					_List_fromArray(
+					[5000000, 6499999, 3]),
+					_List_fromArray(
+					[6500000, 8999999, 0]),
+					_List_fromArray(
+					[9000000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9925',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 2999999, 1]),
+					_List_fromArray(
+					[3000000, 5499999, 2]),
+					_List_fromArray(
+					[5500000, 7349999, 3]),
+					_List_fromArray(
+					[7350000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9926',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 1]),
+					_List_fromArray(
+					[2000000, 3999999, 2]),
+					_List_fromArray(
+					[4000000, 7999999, 3]),
+					_List_fromArray(
+					[8000000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9927',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 999999, 2]),
+					_List_fromArray(
+					[1000000, 3999999, 3]),
+					_List_fromArray(
+					[4000000, 4999999, 4]),
+					_List_fromArray(
+					[5000000, 9999999, 0])
+				])),
+			_Utils_Tuple2(
+			'978-9928',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 999999, 2]),
+					_List_fromArray(
+					[1000000, 3999999, 3]),
+					_List_fromArray(
+					[4000000, 4999999, 4]),
+					_List_fromArray(
+					[5000000, 9999999, 0])
+				])),
+			_Utils_Tuple2(
+			'978-9929',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 3999999, 1]),
+					_List_fromArray(
+					[4000000, 5499999, 2]),
+					_List_fromArray(
+					[5500000, 7999999, 3]),
+					_List_fromArray(
+					[8000000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9930',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 4999999, 2]),
+					_List_fromArray(
+					[5000000, 9399999, 3]),
+					_List_fromArray(
+					[9400000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9931',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 2999999, 2]),
+					_List_fromArray(
+					[3000000, 8999999, 3]),
+					_List_fromArray(
+					[9000000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9932',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 3999999, 2]),
+					_List_fromArray(
+					[4000000, 8499999, 3]),
+					_List_fromArray(
+					[8500000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9933',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 999999, 1]),
+					_List_fromArray(
+					[1000000, 3999999, 2]),
+					_List_fromArray(
+					[4000000, 8999999, 3]),
+					_List_fromArray(
+					[9000000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9934',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 999999, 1]),
+					_List_fromArray(
+					[1000000, 4999999, 2]),
+					_List_fromArray(
+					[5000000, 7999999, 3]),
+					_List_fromArray(
+					[8000000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9935',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 999999, 1]),
+					_List_fromArray(
+					[1000000, 3999999, 2]),
+					_List_fromArray(
+					[4000000, 8999999, 3]),
+					_List_fromArray(
+					[9000000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9936',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 1]),
+					_List_fromArray(
+					[2000000, 3999999, 2]),
+					_List_fromArray(
+					[4000000, 7999999, 3]),
+					_List_fromArray(
+					[8000000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9937',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 2999999, 1]),
+					_List_fromArray(
+					[3000000, 4999999, 2]),
+					_List_fromArray(
+					[5000000, 7999999, 3]),
+					_List_fromArray(
+					[8000000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9938',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 7999999, 2]),
+					_List_fromArray(
+					[8000000, 9499999, 3]),
+					_List_fromArray(
+					[9500000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9939',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 4999999, 1]),
+					_List_fromArray(
+					[5000000, 7999999, 2]),
+					_List_fromArray(
+					[8000000, 8999999, 3]),
+					_List_fromArray(
+					[9000000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9940',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 1]),
+					_List_fromArray(
+					[2000000, 4999999, 2]),
+					_List_fromArray(
+					[5000000, 8999999, 3]),
+					_List_fromArray(
+					[9000000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9941',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 999999, 1]),
+					_List_fromArray(
+					[1000000, 3999999, 2]),
+					_List_fromArray(
+					[4000000, 8999999, 3]),
+					_List_fromArray(
+					[9000000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9942',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 7499999, 2]),
+					_List_fromArray(
+					[7500000, 8499999, 3]),
+					_List_fromArray(
+					[8500000, 8999999, 4]),
+					_List_fromArray(
+					[9000000, 9849999, 3]),
+					_List_fromArray(
+					[9850000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9943',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 2999999, 2]),
+					_List_fromArray(
+					[3000000, 3999999, 3]),
+					_List_fromArray(
+					[4000000, 9749999, 4]),
+					_List_fromArray(
+					[9750000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-9944',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 999999, 4]),
+					_List_fromArray(
+					[1000000, 4999999, 3]),
+					_List_fromArray(
+					[5000000, 5999999, 4]),
+					_List_fromArray(
+					[6000000, 6999999, 2]),
+					_List_fromArray(
+					[7000000, 7999999, 3]),
+					_List_fromArray(
+					[8000000, 8999999, 2]),
+					_List_fromArray(
+					[9000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-9945',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 99999, 2]),
+					_List_fromArray(
+					[100000, 799999, 3]),
+					_List_fromArray(
+					[800000, 3999999, 2]),
+					_List_fromArray(
+					[4000000, 5699999, 3]),
+					_List_fromArray(
+					[5700000, 5799999, 2]),
+					_List_fromArray(
+					[5800000, 8499999, 3]),
+					_List_fromArray(
+					[8500000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9946',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 1]),
+					_List_fromArray(
+					[2000000, 3999999, 2]),
+					_List_fromArray(
+					[4000000, 8999999, 3]),
+					_List_fromArray(
+					[9000000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9947',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 1]),
+					_List_fromArray(
+					[2000000, 7999999, 2]),
+					_List_fromArray(
+					[8000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-9948',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 3999999, 2]),
+					_List_fromArray(
+					[4000000, 8499999, 3]),
+					_List_fromArray(
+					[8500000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9949',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 999999, 1]),
+					_List_fromArray(
+					[1000000, 3999999, 2]),
+					_List_fromArray(
+					[4000000, 7499999, 3]),
+					_List_fromArray(
+					[7500000, 8999999, 2]),
+					_List_fromArray(
+					[9000000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9950',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 2999999, 2]),
+					_List_fromArray(
+					[3000000, 8499999, 3]),
+					_List_fromArray(
+					[8500000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9951',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 3999999, 2]),
+					_List_fromArray(
+					[4000000, 8499999, 3]),
+					_List_fromArray(
+					[8500000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9952',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 1]),
+					_List_fromArray(
+					[2000000, 3999999, 2]),
+					_List_fromArray(
+					[4000000, 7999999, 3]),
+					_List_fromArray(
+					[8000000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9953',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 999999, 1]),
+					_List_fromArray(
+					[1000000, 3999999, 2]),
+					_List_fromArray(
+					[4000000, 5999999, 3]),
+					_List_fromArray(
+					[6000000, 8999999, 2]),
+					_List_fromArray(
+					[9000000, 9299999, 4]),
+					_List_fromArray(
+					[9300000, 9699999, 2]),
+					_List_fromArray(
+					[9700000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-9954',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 1]),
+					_List_fromArray(
+					[2000000, 3999999, 2]),
+					_List_fromArray(
+					[4000000, 7999999, 3]),
+					_List_fromArray(
+					[8000000, 9899999, 4]),
+					_List_fromArray(
+					[9900000, 9999999, 2])
+				])),
+			_Utils_Tuple2(
+			'978-9955',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 3999999, 2]),
+					_List_fromArray(
+					[4000000, 9299999, 3]),
+					_List_fromArray(
+					[9300000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9956',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 999999, 1]),
+					_List_fromArray(
+					[1000000, 3999999, 2]),
+					_List_fromArray(
+					[4000000, 8999999, 3]),
+					_List_fromArray(
+					[9000000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9957',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 3999999, 2]),
+					_List_fromArray(
+					[4000000, 6499999, 3]),
+					_List_fromArray(
+					[6500000, 6799999, 2]),
+					_List_fromArray(
+					[6800000, 6899999, 3]),
+					_List_fromArray(
+					[6900000, 6999999, 3]),
+					_List_fromArray(
+					[7000000, 8499999, 2]),
+					_List_fromArray(
+					[8500000, 8799999, 4]),
+					_List_fromArray(
+					[8800000, 9999999, 2])
+				])),
+			_Utils_Tuple2(
+			'978-9958',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 199999, 2]),
+					_List_fromArray(
+					[200000, 299999, 3]),
+					_List_fromArray(
+					[300000, 399999, 4]),
+					_List_fromArray(
+					[400000, 899999, 3]),
+					_List_fromArray(
+					[900000, 999999, 4]),
+					_List_fromArray(
+					[1000000, 1899999, 2]),
+					_List_fromArray(
+					[1900000, 1999999, 4]),
+					_List_fromArray(
+					[2000000, 4999999, 2]),
+					_List_fromArray(
+					[5000000, 8999999, 3]),
+					_List_fromArray(
+					[9000000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9959',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 1]),
+					_List_fromArray(
+					[2000000, 7999999, 2]),
+					_List_fromArray(
+					[8000000, 9499999, 3]),
+					_List_fromArray(
+					[9500000, 9699999, 4]),
+					_List_fromArray(
+					[9700000, 9799999, 3]),
+					_List_fromArray(
+					[9800000, 9999999, 2])
+				])),
+			_Utils_Tuple2(
+			'978-9960',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 5999999, 2]),
+					_List_fromArray(
+					[6000000, 8999999, 3]),
+					_List_fromArray(
+					[9000000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9961',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 2999999, 1]),
+					_List_fromArray(
+					[3000000, 6999999, 2]),
+					_List_fromArray(
+					[7000000, 9499999, 3]),
+					_List_fromArray(
+					[9500000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9962',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 5499999, 2]),
+					_List_fromArray(
+					[5500000, 5599999, 4]),
+					_List_fromArray(
+					[5600000, 5999999, 2]),
+					_List_fromArray(
+					[6000000, 8499999, 3]),
+					_List_fromArray(
+					[8500000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9963',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 1]),
+					_List_fromArray(
+					[2000000, 2499999, 4]),
+					_List_fromArray(
+					[2500000, 2799999, 3]),
+					_List_fromArray(
+					[2800000, 2999999, 4]),
+					_List_fromArray(
+					[3000000, 5499999, 2]),
+					_List_fromArray(
+					[5500000, 7349999, 3]),
+					_List_fromArray(
+					[7350000, 7499999, 4]),
+					_List_fromArray(
+					[7500000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9964',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 6999999, 1]),
+					_List_fromArray(
+					[7000000, 9499999, 2]),
+					_List_fromArray(
+					[9500000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-9965',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 3999999, 2]),
+					_List_fromArray(
+					[4000000, 8999999, 3]),
+					_List_fromArray(
+					[9000000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9966',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1499999, 3]),
+					_List_fromArray(
+					[1500000, 1999999, 4]),
+					_List_fromArray(
+					[2000000, 6999999, 2]),
+					_List_fromArray(
+					[7000000, 7499999, 4]),
+					_List_fromArray(
+					[7500000, 9599999, 3]),
+					_List_fromArray(
+					[9600000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9967',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 3999999, 2]),
+					_List_fromArray(
+					[4000000, 8999999, 3]),
+					_List_fromArray(
+					[9000000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9968',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 4999999, 2]),
+					_List_fromArray(
+					[5000000, 9399999, 3]),
+					_List_fromArray(
+					[9400000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9970',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 3999999, 2]),
+					_List_fromArray(
+					[4000000, 8999999, 3]),
+					_List_fromArray(
+					[9000000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9971',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 5999999, 1]),
+					_List_fromArray(
+					[6000000, 8999999, 2]),
+					_List_fromArray(
+					[9000000, 9899999, 3]),
+					_List_fromArray(
+					[9900000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9972',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 999999, 2]),
+					_List_fromArray(
+					[1000000, 1999999, 1]),
+					_List_fromArray(
+					[2000000, 2499999, 3]),
+					_List_fromArray(
+					[2500000, 2999999, 4]),
+					_List_fromArray(
+					[3000000, 5999999, 2]),
+					_List_fromArray(
+					[6000000, 8999999, 3]),
+					_List_fromArray(
+					[9000000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9973',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 599999, 2]),
+					_List_fromArray(
+					[600000, 899999, 3]),
+					_List_fromArray(
+					[900000, 999999, 4]),
+					_List_fromArray(
+					[1000000, 6999999, 2]),
+					_List_fromArray(
+					[7000000, 9699999, 3]),
+					_List_fromArray(
+					[9700000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9974',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 2999999, 1]),
+					_List_fromArray(
+					[3000000, 5499999, 2]),
+					_List_fromArray(
+					[5500000, 7499999, 3]),
+					_List_fromArray(
+					[7500000, 8799999, 4]),
+					_List_fromArray(
+					[8800000, 9099999, 3]),
+					_List_fromArray(
+					[9100000, 9499999, 2]),
+					_List_fromArray(
+					[9500000, 9999999, 2])
+				])),
+			_Utils_Tuple2(
+			'978-9975',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 999999, 1]),
+					_List_fromArray(
+					[1000000, 2999999, 3]),
+					_List_fromArray(
+					[3000000, 3999999, 4]),
+					_List_fromArray(
+					[4000000, 4499999, 4]),
+					_List_fromArray(
+					[4500000, 8999999, 2]),
+					_List_fromArray(
+					[9000000, 9499999, 3]),
+					_List_fromArray(
+					[9500000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9976',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 4999999, 1]),
+					_List_fromArray(
+					[5000000, 5999999, 4]),
+					_List_fromArray(
+					[6000000, 8999999, 2]),
+					_List_fromArray(
+					[9000000, 9899999, 3]),
+					_List_fromArray(
+					[9900000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9977',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 8999999, 2]),
+					_List_fromArray(
+					[9000000, 9899999, 3]),
+					_List_fromArray(
+					[9900000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9978',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 2999999, 2]),
+					_List_fromArray(
+					[3000000, 3999999, 3]),
+					_List_fromArray(
+					[4000000, 9499999, 2]),
+					_List_fromArray(
+					[9500000, 9899999, 3]),
+					_List_fromArray(
+					[9900000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9979',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 4999999, 1]),
+					_List_fromArray(
+					[5000000, 6499999, 2]),
+					_List_fromArray(
+					[6500000, 6599999, 3]),
+					_List_fromArray(
+					[6600000, 7599999, 2]),
+					_List_fromArray(
+					[7600000, 8999999, 3]),
+					_List_fromArray(
+					[9000000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9980',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 3999999, 1]),
+					_List_fromArray(
+					[4000000, 8999999, 2]),
+					_List_fromArray(
+					[9000000, 9899999, 3]),
+					_List_fromArray(
+					[9900000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9981',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 999999, 2]),
+					_List_fromArray(
+					[1000000, 1599999, 3]),
+					_List_fromArray(
+					[1600000, 1999999, 4]),
+					_List_fromArray(
+					[2000000, 7999999, 2]),
+					_List_fromArray(
+					[8000000, 9499999, 3]),
+					_List_fromArray(
+					[9500000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9982',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 7999999, 2]),
+					_List_fromArray(
+					[8000000, 9899999, 3]),
+					_List_fromArray(
+					[9900000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9983',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 7999999, 0]),
+					_List_fromArray(
+					[8000000, 9499999, 2]),
+					_List_fromArray(
+					[9500000, 9899999, 3]),
+					_List_fromArray(
+					[9900000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9984',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 4999999, 2]),
+					_List_fromArray(
+					[5000000, 8999999, 3]),
+					_List_fromArray(
+					[9000000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9985',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 4999999, 1]),
+					_List_fromArray(
+					[5000000, 7999999, 2]),
+					_List_fromArray(
+					[8000000, 8999999, 3]),
+					_List_fromArray(
+					[9000000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9986',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 3999999, 2]),
+					_List_fromArray(
+					[4000000, 8999999, 3]),
+					_List_fromArray(
+					[9000000, 9399999, 4]),
+					_List_fromArray(
+					[9400000, 9699999, 3]),
+					_List_fromArray(
+					[9700000, 9999999, 2])
+				])),
+			_Utils_Tuple2(
+			'978-9987',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 3999999, 2]),
+					_List_fromArray(
+					[4000000, 8799999, 3]),
+					_List_fromArray(
+					[8800000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9988',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 2999999, 1]),
+					_List_fromArray(
+					[3000000, 5499999, 2]),
+					_List_fromArray(
+					[5500000, 7499999, 3]),
+					_List_fromArray(
+					[7500000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-9989',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 999999, 1]),
+					_List_fromArray(
+					[1000000, 1999999, 3]),
+					_List_fromArray(
+					[2000000, 2999999, 4]),
+					_List_fromArray(
+					[3000000, 5999999, 2]),
+					_List_fromArray(
+					[6000000, 9499999, 3]),
+					_List_fromArray(
+					[9500000, 9999999, 4])
+				])),
+			_Utils_Tuple2(
+			'978-99901',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 4999999, 2]),
+					_List_fromArray(
+					[5000000, 7999999, 3]),
+					_List_fromArray(
+					[8000000, 9999999, 2])
+				])),
+			_Utils_Tuple2(
+			'978-99902',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 9999999, 0])
+				])),
+			_Utils_Tuple2(
+			'978-99903',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 1]),
+					_List_fromArray(
+					[2000000, 8999999, 2]),
+					_List_fromArray(
+					[9000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99904',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 5999999, 1]),
+					_List_fromArray(
+					[6000000, 8999999, 2]),
+					_List_fromArray(
+					[9000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99905',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 3999999, 1]),
+					_List_fromArray(
+					[4000000, 7999999, 2]),
+					_List_fromArray(
+					[8000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99906',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 2999999, 1]),
+					_List_fromArray(
+					[3000000, 5999999, 2]),
+					_List_fromArray(
+					[6000000, 6999999, 3]),
+					_List_fromArray(
+					[7000000, 8999999, 2]),
+					_List_fromArray(
+					[9000000, 9499999, 2]),
+					_List_fromArray(
+					[9500000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99908',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 999999, 1]),
+					_List_fromArray(
+					[1000000, 8999999, 2]),
+					_List_fromArray(
+					[9000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99909',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 3999999, 1]),
+					_List_fromArray(
+					[4000000, 9499999, 2]),
+					_List_fromArray(
+					[9500000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99910',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 2999999, 1]),
+					_List_fromArray(
+					[3000000, 8999999, 2]),
+					_List_fromArray(
+					[9000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99911',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 5999999, 2]),
+					_List_fromArray(
+					[6000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99912',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 3999999, 1]),
+					_List_fromArray(
+					[4000000, 5999999, 3]),
+					_List_fromArray(
+					[6000000, 8999999, 2]),
+					_List_fromArray(
+					[9000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99913',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 2999999, 1]),
+					_List_fromArray(
+					[3000000, 3599999, 2]),
+					_List_fromArray(
+					[3600000, 5999999, 0]),
+					_List_fromArray(
+					[6000000, 6049999, 3]),
+					_List_fromArray(
+					[6050000, 9999999, 0])
+				])),
+			_Utils_Tuple2(
+			'978-99914',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 4999999, 1]),
+					_List_fromArray(
+					[5000000, 8999999, 2]),
+					_List_fromArray(
+					[9000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99915',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 4999999, 1]),
+					_List_fromArray(
+					[5000000, 7999999, 2]),
+					_List_fromArray(
+					[8000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99916',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 2999999, 1]),
+					_List_fromArray(
+					[3000000, 6999999, 2]),
+					_List_fromArray(
+					[7000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99917',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 2999999, 1]),
+					_List_fromArray(
+					[3000000, 8999999, 2]),
+					_List_fromArray(
+					[9000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99918',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 3999999, 1]),
+					_List_fromArray(
+					[4000000, 7999999, 2]),
+					_List_fromArray(
+					[8000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99919',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 2999999, 1]),
+					_List_fromArray(
+					[3000000, 3999999, 3]),
+					_List_fromArray(
+					[4000000, 6999999, 2]),
+					_List_fromArray(
+					[7000000, 7999999, 2]),
+					_List_fromArray(
+					[8000000, 8499999, 3]),
+					_List_fromArray(
+					[8500000, 8999999, 3]),
+					_List_fromArray(
+					[9000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99920',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 4999999, 1]),
+					_List_fromArray(
+					[5000000, 8999999, 2]),
+					_List_fromArray(
+					[9000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99921',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 1]),
+					_List_fromArray(
+					[2000000, 6999999, 2]),
+					_List_fromArray(
+					[7000000, 7999999, 3]),
+					_List_fromArray(
+					[8000000, 8999999, 1]),
+					_List_fromArray(
+					[9000000, 9999999, 2])
+				])),
+			_Utils_Tuple2(
+			'978-99922',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 3999999, 1]),
+					_List_fromArray(
+					[4000000, 6999999, 2]),
+					_List_fromArray(
+					[7000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99923',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 1]),
+					_List_fromArray(
+					[2000000, 7999999, 2]),
+					_List_fromArray(
+					[8000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99924',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 1]),
+					_List_fromArray(
+					[2000000, 7999999, 2]),
+					_List_fromArray(
+					[8000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99925',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 3999999, 1]),
+					_List_fromArray(
+					[4000000, 7999999, 2]),
+					_List_fromArray(
+					[8000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99926',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 999999, 1]),
+					_List_fromArray(
+					[1000000, 5999999, 2]),
+					_List_fromArray(
+					[6000000, 8699999, 3]),
+					_List_fromArray(
+					[8700000, 8999999, 2]),
+					_List_fromArray(
+					[9000000, 9999999, 2])
+				])),
+			_Utils_Tuple2(
+			'978-99927',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 2999999, 1]),
+					_List_fromArray(
+					[3000000, 5999999, 2]),
+					_List_fromArray(
+					[6000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99928',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 999999, 1]),
+					_List_fromArray(
+					[1000000, 7999999, 2]),
+					_List_fromArray(
+					[8000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99929',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 4999999, 1]),
+					_List_fromArray(
+					[5000000, 7999999, 2]),
+					_List_fromArray(
+					[8000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99930',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 4999999, 1]),
+					_List_fromArray(
+					[5000000, 7999999, 2]),
+					_List_fromArray(
+					[8000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99931',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 4999999, 1]),
+					_List_fromArray(
+					[5000000, 7999999, 2]),
+					_List_fromArray(
+					[8000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99932',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 999999, 1]),
+					_List_fromArray(
+					[1000000, 5999999, 2]),
+					_List_fromArray(
+					[6000000, 6999999, 3]),
+					_List_fromArray(
+					[7000000, 7999999, 1]),
+					_List_fromArray(
+					[8000000, 9999999, 2])
+				])),
+			_Utils_Tuple2(
+			'978-99933',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 2999999, 1]),
+					_List_fromArray(
+					[3000000, 5999999, 2]),
+					_List_fromArray(
+					[6000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99934',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 1]),
+					_List_fromArray(
+					[2000000, 7999999, 2]),
+					_List_fromArray(
+					[8000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99935',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 2999999, 1]),
+					_List_fromArray(
+					[3000000, 5999999, 2]),
+					_List_fromArray(
+					[6000000, 6999999, 3]),
+					_List_fromArray(
+					[7000000, 8999999, 1]),
+					_List_fromArray(
+					[9000000, 9999999, 2])
+				])),
+			_Utils_Tuple2(
+			'978-99936',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 999999, 1]),
+					_List_fromArray(
+					[1000000, 5999999, 2]),
+					_List_fromArray(
+					[6000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99937',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 1]),
+					_List_fromArray(
+					[2000000, 5999999, 2]),
+					_List_fromArray(
+					[6000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99938',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 1]),
+					_List_fromArray(
+					[2000000, 5999999, 2]),
+					_List_fromArray(
+					[6000000, 8999999, 3]),
+					_List_fromArray(
+					[9000000, 9999999, 2])
+				])),
+			_Utils_Tuple2(
+			'978-99939',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 5999999, 1]),
+					_List_fromArray(
+					[6000000, 8999999, 2]),
+					_List_fromArray(
+					[9000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99940',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 999999, 1]),
+					_List_fromArray(
+					[1000000, 6999999, 2]),
+					_List_fromArray(
+					[7000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99941',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 2999999, 1]),
+					_List_fromArray(
+					[3000000, 7999999, 2]),
+					_List_fromArray(
+					[8000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99942',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 4999999, 1]),
+					_List_fromArray(
+					[5000000, 7999999, 2]),
+					_List_fromArray(
+					[8000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99943',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 2999999, 1]),
+					_List_fromArray(
+					[3000000, 5999999, 2]),
+					_List_fromArray(
+					[6000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99944',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 4999999, 1]),
+					_List_fromArray(
+					[5000000, 7999999, 2]),
+					_List_fromArray(
+					[8000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99945',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 5999999, 1]),
+					_List_fromArray(
+					[6000000, 8999999, 2]),
+					_List_fromArray(
+					[9000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99946',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 2999999, 1]),
+					_List_fromArray(
+					[3000000, 5999999, 2]),
+					_List_fromArray(
+					[6000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99947',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 2999999, 1]),
+					_List_fromArray(
+					[3000000, 6999999, 2]),
+					_List_fromArray(
+					[7000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99948',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 4999999, 1]),
+					_List_fromArray(
+					[5000000, 7999999, 2]),
+					_List_fromArray(
+					[8000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99949',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 1]),
+					_List_fromArray(
+					[2000000, 8999999, 2]),
+					_List_fromArray(
+					[9000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99950',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 4999999, 1]),
+					_List_fromArray(
+					[5000000, 7999999, 2]),
+					_List_fromArray(
+					[8000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99951',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 9999999, 0])
+				])),
+			_Utils_Tuple2(
+			'978-99952',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 4999999, 1]),
+					_List_fromArray(
+					[5000000, 7999999, 2]),
+					_List_fromArray(
+					[8000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99953',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 2999999, 1]),
+					_List_fromArray(
+					[3000000, 7999999, 2]),
+					_List_fromArray(
+					[8000000, 9399999, 3]),
+					_List_fromArray(
+					[9400000, 9999999, 2])
+				])),
+			_Utils_Tuple2(
+			'978-99954',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 2999999, 1]),
+					_List_fromArray(
+					[3000000, 6999999, 2]),
+					_List_fromArray(
+					[7000000, 8799999, 3]),
+					_List_fromArray(
+					[8800000, 9999999, 2])
+				])),
+			_Utils_Tuple2(
+			'978-99955',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 1]),
+					_List_fromArray(
+					[2000000, 5999999, 2]),
+					_List_fromArray(
+					[6000000, 7999999, 3]),
+					_List_fromArray(
+					[8000000, 9999999, 2])
+				])),
+			_Utils_Tuple2(
+			'978-99956',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 5999999, 2]),
+					_List_fromArray(
+					[6000000, 8599999, 3]),
+					_List_fromArray(
+					[8600000, 9999999, 2])
+				])),
+			_Utils_Tuple2(
+			'978-99957',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 1]),
+					_List_fromArray(
+					[2000000, 7999999, 2]),
+					_List_fromArray(
+					[8000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99958',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 4999999, 1]),
+					_List_fromArray(
+					[5000000, 9399999, 2]),
+					_List_fromArray(
+					[9400000, 9499999, 3]),
+					_List_fromArray(
+					[9500000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99959',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 2999999, 1]),
+					_List_fromArray(
+					[3000000, 5999999, 2]),
+					_List_fromArray(
+					[6000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99960',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 999999, 1]),
+					_List_fromArray(
+					[1000000, 9499999, 2]),
+					_List_fromArray(
+					[9500000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99961',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 3999999, 1]),
+					_List_fromArray(
+					[4000000, 8999999, 2]),
+					_List_fromArray(
+					[9000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99962',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 4999999, 1]),
+					_List_fromArray(
+					[5000000, 7999999, 2]),
+					_List_fromArray(
+					[8000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99963',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 4999999, 2]),
+					_List_fromArray(
+					[5000000, 9199999, 3]),
+					_List_fromArray(
+					[9200000, 9999999, 2])
+				])),
+			_Utils_Tuple2(
+			'978-99964',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 1]),
+					_List_fromArray(
+					[2000000, 7999999, 2]),
+					_List_fromArray(
+					[8000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99965',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 2999999, 1]),
+					_List_fromArray(
+					[3000000, 3999999, 3]),
+					_List_fromArray(
+					[4000000, 6299999, 2]),
+					_List_fromArray(
+					[6300000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99966',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 2999999, 1]),
+					_List_fromArray(
+					[3000000, 6999999, 2]),
+					_List_fromArray(
+					[7000000, 7999999, 3]),
+					_List_fromArray(
+					[8000000, 9499999, 2]),
+					_List_fromArray(
+					[9500000, 9999999, 0])
+				])),
+			_Utils_Tuple2(
+			'978-99967',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 1]),
+					_List_fromArray(
+					[2000000, 5999999, 2]),
+					_List_fromArray(
+					[6000000, 8999999, 3]),
+					_List_fromArray(
+					[9000000, 9999999, 0])
+				])),
+			_Utils_Tuple2(
+			'978-99968',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 3999999, 1]),
+					_List_fromArray(
+					[4000000, 5999999, 3]),
+					_List_fromArray(
+					[6000000, 8999999, 2]),
+					_List_fromArray(
+					[9000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99969',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 4999999, 1]),
+					_List_fromArray(
+					[5000000, 7999999, 2]),
+					_List_fromArray(
+					[8000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99970',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 4999999, 1]),
+					_List_fromArray(
+					[5000000, 8999999, 2]),
+					_List_fromArray(
+					[9000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99971',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 5999999, 1]),
+					_List_fromArray(
+					[6000000, 8499999, 2]),
+					_List_fromArray(
+					[8500000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99972',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 4999999, 1]),
+					_List_fromArray(
+					[5000000, 8999999, 2]),
+					_List_fromArray(
+					[9000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99973',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 3999999, 1]),
+					_List_fromArray(
+					[4000000, 7999999, 2]),
+					_List_fromArray(
+					[8000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99974',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 3999999, 0]),
+					_List_fromArray(
+					[4000000, 7999999, 2]),
+					_List_fromArray(
+					[8000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99975',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 3999999, 1]),
+					_List_fromArray(
+					[4000000, 7999999, 2]),
+					_List_fromArray(
+					[8000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99976',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 1]),
+					_List_fromArray(
+					[2000000, 5999999, 2]),
+					_List_fromArray(
+					[6000000, 7999999, 3]),
+					_List_fromArray(
+					[8000000, 9999999, 0])
+				])),
+			_Utils_Tuple2(
+			'978-99977',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 1]),
+					_List_fromArray(
+					[2000000, 3999999, 0]),
+					_List_fromArray(
+					[4000000, 6999999, 2]),
+					_List_fromArray(
+					[7000000, 7999999, 3]),
+					_List_fromArray(
+					[8000000, 9999999, 0])
+				])),
+			_Utils_Tuple2(
+			'978-99978',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 4999999, 1]),
+					_List_fromArray(
+					[5000000, 7999999, 2]),
+					_List_fromArray(
+					[8000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'978-99979',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 4999999, 1]),
+					_List_fromArray(
+					[5000000, 7999999, 2]),
+					_List_fromArray(
+					[8000000, 9999999, 3])
+				])),
+			_Utils_Tuple2(
+			'979-10',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 2]),
+					_List_fromArray(
+					[2000000, 6999999, 3]),
+					_List_fromArray(
+					[7000000, 8999999, 4]),
+					_List_fromArray(
+					[9000000, 9759999, 5]),
+					_List_fromArray(
+					[9760000, 9999999, 6])
+				])),
+			_Utils_Tuple2(
+			'979-11',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 2499999, 2]),
+					_List_fromArray(
+					[2500000, 5499999, 3]),
+					_List_fromArray(
+					[5500000, 8499999, 4]),
+					_List_fromArray(
+					[8500000, 9499999, 5]),
+					_List_fromArray(
+					[9500000, 9999999, 6])
+				])),
+			_Utils_Tuple2(
+			'979-12',
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[0, 1999999, 0]),
+					_List_fromArray(
+					[2000000, 2009999, 3]),
+					_List_fromArray(
+					[2010000, 9999999, 0])
+				]))
+		]));
+var elm$core$List$isEmpty = function (xs) {
+	if (!xs.b) {
+		return true;
+	} else {
+		return false;
+	}
+};
+var author$project$Main$dividePublisher = function (isbn) {
+	var headnat = (elm$core$List$isEmpty(isbn.header) ? '978' : author$project$Main$intsToString(isbn.header)) + ('-' + author$project$Main$intsToString(isbn.nation));
+	var ranges = function () {
+		var _n7 = A2(elm$core$Dict$get, headnat, author$project$Main$dictRange);
+		if (_n7.$ === 'Just') {
+			var dat = _n7.a;
+			return dat;
+		} else {
+			return _List_fromArray(
+				[
+					_List_fromArray(
+					[0, 0, 0])
+				]);
+		}
+	}();
+	var candidate = author$project$Main$intsToString(
+		A2(elm$core$List$take, 7, isbn.book));
+	var check = function (bounds) {
+		if (((bounds.b && bounds.b.b) && bounds.b.b.b) && (!bounds.b.b.b.b)) {
+			var lower = bounds.a;
+			var _n5 = bounds.b;
+			var upper = _n5.a;
+			var _n6 = _n5.b;
+			var n = _n6.a;
+			return (_Utils_cmp(
+				elm$core$String$fromInt(lower),
+				candidate) < 1) && (_Utils_cmp(
+				candidate,
+				elm$core$String$fromInt(upper)) < 1);
+		} else {
+			return false;
+		}
+	};
+	var range = function () {
+		var _n0 = A2(author$project$Main$find, check, ranges);
+		if (((((_n0.$ === 'Just') && _n0.a.b) && _n0.a.b.b) && _n0.a.b.b.b) && (!_n0.a.b.b.b.b)) {
+			var _n1 = _n0.a;
+			var lower = _n1.a;
+			var _n2 = _n1.b;
+			var upper = _n2.a;
+			var _n3 = _n2.b;
+			var n = _n3.a;
+			return n;
+		} else {
+			return 0;
+		}
+	}();
+	return A5(
+		author$project$Main$ISBN,
+		isbn.header,
+		isbn.nation,
+		A2(elm$core$List$take, range, isbn.book),
+		A2(elm$core$List$drop, range, isbn.book),
+		isbn.digit);
+};
+var author$project$Main$toISBN = function (digits) {
+	return A5(author$project$Main$ISBN, _List_Nil, _List_Nil, _List_Nil, digits, _List_Nil);
+};
+var author$project$Main$intsToISBN = A2(
+	elm$core$Basics$composeR,
+	author$project$Main$toISBN,
+	A2(elm$core$Basics$composeR, author$project$Main$divideNation, author$project$Main$dividePublisher));
+var author$project$Main$stringToISBN = A2(elm$core$Basics$composeR, author$project$Main$stringToInts, author$project$Main$intsToISBN);
+var elm$core$Basics$modBy = _Basics_modBy;
+var elm$core$Basics$negate = function (n) {
+	return -n;
+};
+var elm$core$List$sum = function (numbers) {
+	return A3(elm$core$List$foldl, elm$core$Basics$add, 0, numbers);
+};
+var author$project$Main$checksum13 = A2(
+	elm$core$Basics$composeR,
+	A2(
+		elm$core$List$map2,
+		elm$core$Basics$mul,
+		_List_fromArray(
+			[1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3])),
+	A2(
+		elm$core$Basics$composeR,
+		elm$core$List$sum,
+		A2(
+			elm$core$Basics$composeR,
+			elm$core$Basics$negate,
+			elm$core$Basics$modBy(10))));
+var author$project$Main$checksum10 = A2(
+	elm$core$Basics$composeR,
+	A2(
+		elm$core$List$map2,
+		elm$core$Basics$mul,
+		_List_fromArray(
+			[10, 9, 8, 7, 6, 5, 4, 3, 2])),
+	A2(
+		elm$core$Basics$composeR,
+		elm$core$List$sum,
+		A2(
+			elm$core$Basics$composeR,
+			elm$core$Basics$negate,
+			elm$core$Basics$modBy(11))));
+var elm$core$Basics$neq = _Utils_notEqual;
+var author$project$Main$verify = function (digits) {
+	var prefix = A2(elm$core$List$take, 3, digits);
+	var len = elm$core$List$length(digits);
+	var lastdigit = A2(elm$core$List$drop, len - 1, digits);
+	return (!len) ? elm$core$Result$Err('') : (((len !== 10) && (len !== 13)) ? elm$core$Result$Err('Error: wrong length') : (((len === 10) && (!_Utils_eq(
+		_List_fromArray(
+			[
+				author$project$Main$checksum10(digits)
+			]),
+		lastdigit))) ? elm$core$Result$Err('Error: bad check digit') : (((len === 13) && ((!_Utils_eq(
+		prefix,
+		_List_fromArray(
+			[9, 7, 8]))) && (!_Utils_eq(
+		prefix,
+		_List_fromArray(
+			[9, 7, 9]))))) ? elm$core$Result$Err('Error: invalid prefix') : (((len === 13) && (!_Utils_eq(
+		_List_fromArray(
+			[
+				author$project$Main$checksum13(digits)
+			]),
+		lastdigit))) ? elm$core$Result$Err('Error: bad check digit') : elm$core$Result$Ok(digits)))));
+};
+var elm$core$List$append = F2(
+	function (xs, ys) {
+		if (!ys.b) {
+			return xs;
+		} else {
+			return A3(elm$core$List$foldr, elm$core$List$cons, ys, xs);
+		}
+	});
+var author$project$Main$conv13 = function (digits) {
+	var result = author$project$Main$verify(digits);
+	var len = elm$core$List$length(digits);
+	var body = A2(
+		elm$core$List$append,
+		_List_fromArray(
+			[9, 7, 8]),
+		A2(elm$core$List$take, 9, digits));
+	if (result.$ === 'Err') {
+		return result;
+	} else {
+		return (len === 13) ? result : elm$core$Result$Ok(
+			_Utils_ap(
+				body,
+				_List_fromArray(
+					[
+						author$project$Main$checksum13(body)
+					])));
+	}
+};
+var author$project$Main$fromISBN = function (isbn) {
+	return _List_fromArray(
+		[isbn.header, isbn.nation, isbn.publisher, isbn.book, isbn.digit]);
+};
+var elm$core$Basics$not = _Basics_not;
+var author$project$Main$hyphenate = function (result) {
+	if (result.$ === 'Err') {
+		var str = result.a;
+		return str;
+	} else {
+		var ns = result.a;
+		return A2(
+			elm$core$String$join,
+			'-',
+			A2(
+				elm$core$List$map,
+				author$project$Main$intsToString,
+				A2(
+					elm$core$List$filter,
+					A2(elm$core$Basics$composeR, elm$core$List$isEmpty, elm$core$Basics$not),
+					author$project$Main$fromISBN(
+						author$project$Main$intsToISBN(ns)))));
+	}
+};
+var author$project$Main$to13h = A2(
+	elm$core$Basics$composeR,
+	author$project$Main$stringToInts,
+	A2(elm$core$Basics$composeR, author$project$Main$conv13, author$project$Main$hyphenate));
+var elm$core$Basics$composeL = F3(
+	function (g, f, x) {
+		return g(
+			f(x));
+	});
+var elm$json$Json$Decode$field = _Json_decodeField;
+var elm$json$Json$Decode$index = _Json_decodeIndex;
+var elm$json$Json$Decode$list = _Json_decodeList;
+var elm$json$Json$Decode$map = _Json_map1;
+var elm$json$Json$Decode$map3 = _Json_map3;
+var elm$json$Json$Decode$string = _Json_decodeString;
+var author$project$Main$bookDecoderF = F2(
+	function (n, str) {
+		var volume = A2(
+			elm$core$Basics$composeL,
+			A2(
+				elm$core$Basics$composeL,
+				elm$json$Json$Decode$field('items'),
+				elm$json$Json$Decode$index(0)),
+			elm$json$Json$Decode$field('volumeInfo'));
+		var title = A3(
+			elm$core$Basics$composeL,
+			volume,
+			elm$json$Json$Decode$field('title'),
+			elm$json$Json$Decode$string);
+		var isbn = author$project$Main$stringToISBN(str);
+		var date = A3(
+			elm$core$Basics$composeL,
+			volume,
+			elm$json$Json$Decode$field('publishedDate'),
+			elm$json$Json$Decode$string);
+		var authors = A2(
+			elm$json$Json$Decode$map,
+			elm$core$String$join(', '),
+			A3(
+				elm$core$Basics$composeL,
+				volume,
+				elm$json$Json$Decode$field('authors'),
+				elm$json$Json$Decode$list(elm$json$Json$Decode$string)));
+		return A4(
+			elm$json$Json$Decode$map3,
+			F3(
+				function (x, y, z) {
+					return {
+						authors: y,
+						input: str,
+						isbn13: author$project$Main$to13h(str),
+						nation: author$project$Main$getNation(isbn),
+						order: n,
+						pubdate: x,
+						publisher: '',
+						remark: '',
+						title: z
+					};
+				}),
+			date,
+			authors,
+			title);
+	});
+var elm$json$Json$Decode$map4 = _Json_map4;
+var author$project$Main$bookDecoderJ = F2(
+	function (n, str) {
+		var volume = A2(
+			elm$core$Basics$composeL,
+			elm$json$Json$Decode$index(0),
+			elm$json$Json$Decode$field('summary'));
+		var title = A3(
+			elm$core$Basics$composeL,
+			volume,
+			elm$json$Json$Decode$field('title'),
+			elm$json$Json$Decode$string);
+		var publisher = A3(
+			elm$core$Basics$composeL,
+			volume,
+			elm$json$Json$Decode$field('publisher'),
+			elm$json$Json$Decode$string);
+		var isbn = author$project$Main$stringToISBN(str);
+		var date = A3(
+			elm$core$Basics$composeL,
+			volume,
+			elm$json$Json$Decode$field('pubdate'),
+			elm$json$Json$Decode$string);
+		var authors = A3(
+			elm$core$Basics$composeL,
+			volume,
+			elm$json$Json$Decode$field('author'),
+			elm$json$Json$Decode$string);
+		return A5(
+			elm$json$Json$Decode$map4,
+			F4(
+				function (w, x, y, z) {
+					return {
+						authors: y,
+						input: str,
+						isbn13: author$project$Main$to13h(str),
+						nation: author$project$Main$getNation(isbn),
+						order: n,
+						pubdate: x,
+						publisher: w,
+						remark: '',
+						title: z
+					};
+				}),
+			publisher,
+			date,
+			authors,
+			title);
+	});
 var author$project$Main$dictPub = elm$core$Dict$fromList(
 	_List_fromArray(
 		[
@@ -5982,6 +9961,7 @@ var author$project$Main$dictPub = elm$core$Dict$fromList(
 			_Utils_Tuple2('7765', '日本文学館'),
 			_Utils_Tuple2('7780', '小学館クリエイティブ'),
 			_Utils_Tuple2('7782', 'カナリア書房'),
+			_Utils_Tuple2('7808', 'ポット出版'),
 			_Utils_Tuple2('7819', 'サイエンス社'),
 			_Utils_Tuple2('7820', '菜根出版'),
 			_Utils_Tuple2('7821', '幸書房'),
@@ -18167,3936 +22147,6 @@ var author$project$Main$getPub = function (isbn) {
 				[4])) ? ('（不明:' + (key + ')')) : ('（外国:' + (key + ')'));
 	}
 };
-var author$project$Main$ISBN = F5(
-	function (header, nation, publisher, book, digit) {
-		return {book: book, digit: digit, header: header, nation: nation, publisher: publisher};
-	});
-var author$project$Main$dictHeader = _List_fromArray(
-	['978-0', '978-1', '978-2', '978-3', '978-4', '978-5', '978-600', '978-601', '978-602', '978-603', '978-604', '978-605', '978-606', '978-607', '978-608', '978-609', '978-611', '978-612', '978-613', '978-614', '978-615', '978-616', '978-617', '978-618', '978-619', '978-620', '978-621', '978-7', '978-80', '978-81', '978-82', '978-83', '978-84', '978-85', '978-86', '978-87', '978-88', '978-89', '978-90', '978-91', '978-92', '978-93', '978-94', '978-950', '978-951', '978-952', '978-953', '978-954', '978-955', '978-956', '978-957', '978-958', '978-959', '978-960', '978-961', '978-962', '978-963', '978-964', '978-965', '978-966', '978-967', '978-968', '978-969', '978-970', '978-971', '978-972', '978-973', '978-974', '978-975', '978-976', '978-977', '978-978', '978-979', '978-980', '978-981', '978-982', '978-983', '978-984', '978-985', '978-986', '978-987', '978-988', '978-989', '978-9924', '978-9925', '978-9926', '978-9927', '978-9928', '978-9929', '978-9930', '978-9931', '978-9932', '978-9933', '978-9934', '978-9935', '978-9936', '978-9937', '978-9938', '978-9939', '978-9940', '978-9941', '978-9942', '978-9943', '978-9944', '978-9945', '978-9946', '978-9947', '978-9948', '978-9949', '978-9950', '978-9951', '978-9952', '978-9953', '978-9954', '978-9955', '978-9956', '978-9957', '978-9958', '978-9959', '978-9960', '978-9961', '978-9962', '978-9963', '978-9964', '978-9965', '978-9966', '978-9967', '978-9968', '978-9970', '978-9971', '978-9972', '978-9973', '978-9974', '978-9975', '978-9976', '978-9977', '978-9978', '978-9979', '978-9980', '978-9981', '978-9982', '978-9983', '978-9984', '978-9985', '978-9986', '978-9987', '978-9988', '978-9989', '978-99901', '978-99902', '978-99903', '978-99904', '978-99905', '978-99906', '978-99908', '978-99909', '978-99910', '978-99911', '978-99912', '978-99913', '978-99914', '978-99915', '978-99916', '978-99917', '978-99918', '978-99919', '978-99920', '978-99921', '978-99922', '978-99923', '978-99924', '978-99925', '978-99926', '978-99927', '978-99928', '978-99929', '978-99930', '978-99931', '978-99932', '978-99933', '978-99934', '978-99935', '978-99936', '978-99937', '978-99938', '978-99939', '978-99940', '978-99941', '978-99942', '978-99943', '978-99944', '978-99945', '978-99946', '978-99947', '978-99948', '978-99949', '978-99950', '978-99951', '978-99952', '978-99953', '978-99954', '978-99955', '978-99956', '978-99957', '978-99958', '978-99959', '978-99960', '978-99961', '978-99962', '978-99963', '978-99964', '978-99965', '978-99966', '978-99967', '978-99968', '978-99969', '978-99970', '978-99971', '978-99972', '978-99973', '978-99974', '978-99975', '978-99976', '978-99977', '978-99978', '978-99979', '979-10', '979-11', '979-12']);
-var author$project$Main$find = F2(
-	function (pred, list) {
-		find:
-		while (true) {
-			if (list.b) {
-				var x = list.a;
-				var xs = list.b;
-				if (pred(x)) {
-					return elm$core$Maybe$Just(x);
-				} else {
-					var $temp$pred = pred,
-						$temp$list = xs;
-					pred = $temp$pred;
-					list = $temp$list;
-					continue find;
-				}
-			} else {
-				return elm$core$Maybe$Nothing;
-			}
-		}
-	});
-var elm$core$Basics$ge = _Utils_ge;
-var author$project$Main$isDigit = function (_char) {
-	var num = elm$core$Char$toCode(_char);
-	return ((num >= 48) && (num <= 57)) || ((num === 88) || (((num >= 65296) && (num <= 65305)) || (num === 65336)));
-};
-var elm$core$List$filter = F2(
-	function (isGood, list) {
-		return A3(
-			elm$core$List$foldr,
-			F2(
-				function (x, xs) {
-					return isGood(x) ? A2(elm$core$List$cons, x, xs) : xs;
-				}),
-			_List_Nil,
-			list);
-	});
-var elm$core$String$foldr = _String_foldr;
-var elm$core$String$toList = function (string) {
-	return A3(elm$core$String$foldr, elm$core$List$cons, _List_Nil, string);
-};
-var author$project$Main$stringToInts = function () {
-	var toInt = function (_char) {
-		var _n0 = elm$core$Char$toCode(_char);
-		switch (_n0) {
-			case 88:
-				return 10;
-			case 65336:
-				return 10;
-			default:
-				var num = _n0;
-				return (num <= 57) ? (num - 48) : (num - 65296);
-		}
-	};
-	return A2(
-		elm$core$Basics$composeR,
-		elm$core$String$toList,
-		A2(
-			elm$core$Basics$composeR,
-			elm$core$List$filter(author$project$Main$isDigit),
-			elm$core$List$map(toInt)));
-}();
-var elm$core$List$drop = F2(
-	function (n, list) {
-		drop:
-		while (true) {
-			if (n <= 0) {
-				return list;
-			} else {
-				if (!list.b) {
-					return list;
-				} else {
-					var x = list.a;
-					var xs = list.b;
-					var $temp$n = n - 1,
-						$temp$list = xs;
-					n = $temp$n;
-					list = $temp$list;
-					continue drop;
-				}
-			}
-		}
-	});
-var elm$core$List$takeReverse = F3(
-	function (n, list, kept) {
-		takeReverse:
-		while (true) {
-			if (n <= 0) {
-				return kept;
-			} else {
-				if (!list.b) {
-					return kept;
-				} else {
-					var x = list.a;
-					var xs = list.b;
-					var $temp$n = n - 1,
-						$temp$list = xs,
-						$temp$kept = A2(elm$core$List$cons, x, kept);
-					n = $temp$n;
-					list = $temp$list;
-					kept = $temp$kept;
-					continue takeReverse;
-				}
-			}
-		}
-	});
-var elm$core$List$takeTailRec = F2(
-	function (n, list) {
-		return elm$core$List$reverse(
-			A3(elm$core$List$takeReverse, n, list, _List_Nil));
-	});
-var elm$core$List$takeFast = F3(
-	function (ctr, n, list) {
-		if (n <= 0) {
-			return _List_Nil;
-		} else {
-			var _n0 = _Utils_Tuple2(n, list);
-			_n0$1:
-			while (true) {
-				_n0$5:
-				while (true) {
-					if (!_n0.b.b) {
-						return list;
-					} else {
-						if (_n0.b.b.b) {
-							switch (_n0.a) {
-								case 1:
-									break _n0$1;
-								case 2:
-									var _n2 = _n0.b;
-									var x = _n2.a;
-									var _n3 = _n2.b;
-									var y = _n3.a;
-									return _List_fromArray(
-										[x, y]);
-								case 3:
-									if (_n0.b.b.b.b) {
-										var _n4 = _n0.b;
-										var x = _n4.a;
-										var _n5 = _n4.b;
-										var y = _n5.a;
-										var _n6 = _n5.b;
-										var z = _n6.a;
-										return _List_fromArray(
-											[x, y, z]);
-									} else {
-										break _n0$5;
-									}
-								default:
-									if (_n0.b.b.b.b && _n0.b.b.b.b.b) {
-										var _n7 = _n0.b;
-										var x = _n7.a;
-										var _n8 = _n7.b;
-										var y = _n8.a;
-										var _n9 = _n8.b;
-										var z = _n9.a;
-										var _n10 = _n9.b;
-										var w = _n10.a;
-										var tl = _n10.b;
-										return (ctr > 1000) ? A2(
-											elm$core$List$cons,
-											x,
-											A2(
-												elm$core$List$cons,
-												y,
-												A2(
-													elm$core$List$cons,
-													z,
-													A2(
-														elm$core$List$cons,
-														w,
-														A2(elm$core$List$takeTailRec, n - 4, tl))))) : A2(
-											elm$core$List$cons,
-											x,
-											A2(
-												elm$core$List$cons,
-												y,
-												A2(
-													elm$core$List$cons,
-													z,
-													A2(
-														elm$core$List$cons,
-														w,
-														A3(elm$core$List$takeFast, ctr + 1, n - 4, tl)))));
-									} else {
-										break _n0$5;
-									}
-							}
-						} else {
-							if (_n0.a === 1) {
-								break _n0$1;
-							} else {
-								break _n0$5;
-							}
-						}
-					}
-				}
-				return list;
-			}
-			var _n1 = _n0.b;
-			var x = _n1.a;
-			return _List_fromArray(
-				[x]);
-		}
-	});
-var elm$core$List$take = F2(
-	function (n, list) {
-		return A3(elm$core$List$takeFast, 0, n, list);
-	});
-var elm$core$String$length = _String_length;
-var elm$core$String$slice = _String_slice;
-var elm$core$String$dropLeft = F2(
-	function (n, string) {
-		return (n < 1) ? string : A3(
-			elm$core$String$slice,
-			n,
-			elm$core$String$length(string),
-			string);
-	});
-var elm$core$String$startsWith = _String_startsWith;
-var author$project$Main$divideNation = function (isbn) {
-	var digits = isbn.book;
-	var len = elm$core$List$length(digits);
-	var header = A2(elm$core$List$take, len - 10, digits);
-	var digit = A2(elm$core$List$drop, len - 1, digits);
-	var body = A2(
-		elm$core$List$take,
-		9,
-		A2(elm$core$List$drop, len - 10, digits));
-	var candidate = ((len === 10) ? '978' : '') + (author$project$Main$intsToString(header) + ('-' + author$project$Main$intsToString(
-		A2(elm$core$List$take, 5, body))));
-	var key = A2(
-		author$project$Main$find,
-		function (k) {
-			return A2(elm$core$String$startsWith, k, candidate);
-		},
-		author$project$Main$dictHeader);
-	var nation = function () {
-		if (key.$ === 'Nothing') {
-			return _List_Nil;
-		} else {
-			var k = key.a;
-			return author$project$Main$stringToInts(
-				A2(elm$core$String$dropLeft, 4, k));
-		}
-	}();
-	var book = A2(
-		elm$core$List$drop,
-		elm$core$List$length(nation),
-		body);
-	return A5(author$project$Main$ISBN, header, nation, _List_Nil, book, digit);
-};
-var author$project$Main$dictRange = elm$core$Dict$fromList(
-	_List_fromArray(
-		[
-			_Utils_Tuple2(
-			'978-0',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 2]),
-					_List_fromArray(
-					[2000000, 2279999, 3]),
-					_List_fromArray(
-					[2280000, 2289999, 4]),
-					_List_fromArray(
-					[2290000, 6479999, 3]),
-					_List_fromArray(
-					[6480000, 6489999, 7]),
-					_List_fromArray(
-					[6490000, 6999999, 3]),
-					_List_fromArray(
-					[7000000, 8499999, 4]),
-					_List_fromArray(
-					[8500000, 8999999, 5]),
-					_List_fromArray(
-					[9000000, 9499999, 6]),
-					_List_fromArray(
-					[9500000, 9999999, 7])
-				])),
-			_Utils_Tuple2(
-			'978-1',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 999999, 2]),
-					_List_fromArray(
-					[1000000, 3999999, 3]),
-					_List_fromArray(
-					[4000000, 5499999, 4]),
-					_List_fromArray(
-					[5500000, 7319999, 5]),
-					_List_fromArray(
-					[7320000, 7399999, 7]),
-					_List_fromArray(
-					[7400000, 7749999, 5]),
-					_List_fromArray(
-					[7750000, 7753999, 7]),
-					_List_fromArray(
-					[7754000, 8697999, 5]),
-					_List_fromArray(
-					[8698000, 9729999, 6]),
-					_List_fromArray(
-					[9730000, 9877999, 4]),
-					_List_fromArray(
-					[9878000, 9989999, 6]),
-					_List_fromArray(
-					[9990000, 9999999, 7])
-				])),
-			_Utils_Tuple2(
-			'978-2',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 2]),
-					_List_fromArray(
-					[2000000, 3499999, 3]),
-					_List_fromArray(
-					[3500000, 3999999, 5]),
-					_List_fromArray(
-					[4000000, 6999999, 3]),
-					_List_fromArray(
-					[7000000, 8399999, 4]),
-					_List_fromArray(
-					[8400000, 8999999, 5]),
-					_List_fromArray(
-					[9000000, 9199429, 6]),
-					_List_fromArray(
-					[9199430, 9199689, 7]),
-					_List_fromArray(
-					[9199690, 9499999, 6]),
-					_List_fromArray(
-					[9500000, 9999999, 7])
-				])),
-			_Utils_Tuple2(
-			'978-3',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 299999, 2]),
-					_List_fromArray(
-					[300000, 339999, 3]),
-					_List_fromArray(
-					[340000, 369999, 4]),
-					_List_fromArray(
-					[370000, 399999, 5]),
-					_List_fromArray(
-					[400000, 1999999, 2]),
-					_List_fromArray(
-					[2000000, 6999999, 3]),
-					_List_fromArray(
-					[7000000, 8499999, 4]),
-					_List_fromArray(
-					[8500000, 8999999, 5]),
-					_List_fromArray(
-					[9000000, 9499999, 6]),
-					_List_fromArray(
-					[9500000, 9539999, 7]),
-					_List_fromArray(
-					[9540000, 9699999, 5]),
-					_List_fromArray(
-					[9700000, 9899999, 7]),
-					_List_fromArray(
-					[9900000, 9949999, 5]),
-					_List_fromArray(
-					[9950000, 9999999, 5])
-				])),
-			_Utils_Tuple2(
-			'978-4',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 2]),
-					_List_fromArray(
-					[2000000, 6999999, 3]),
-					_List_fromArray(
-					[7000000, 8499999, 4]),
-					_List_fromArray(
-					[8500000, 8999999, 5]),
-					_List_fromArray(
-					[9000000, 9499999, 6]),
-					_List_fromArray(
-					[9500000, 9999999, 7])
-				])),
-			_Utils_Tuple2(
-			'978-5',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 49999, 5]),
-					_List_fromArray(
-					[50000, 99999, 4]),
-					_List_fromArray(
-					[100000, 1999999, 2]),
-					_List_fromArray(
-					[2000000, 4209999, 3]),
-					_List_fromArray(
-					[4210000, 4299999, 4]),
-					_List_fromArray(
-					[4300000, 4309999, 3]),
-					_List_fromArray(
-					[4310000, 4399999, 4]),
-					_List_fromArray(
-					[4400000, 4409999, 3]),
-					_List_fromArray(
-					[4410000, 4499999, 4]),
-					_List_fromArray(
-					[4500000, 6039999, 3]),
-					_List_fromArray(
-					[6040000, 6049999, 7]),
-					_List_fromArray(
-					[6050000, 6999999, 3]),
-					_List_fromArray(
-					[7000000, 8499999, 4]),
-					_List_fromArray(
-					[8500000, 8999999, 5]),
-					_List_fromArray(
-					[9000000, 9099999, 6]),
-					_List_fromArray(
-					[9100000, 9199999, 5]),
-					_List_fromArray(
-					[9200000, 9299999, 4]),
-					_List_fromArray(
-					[9300000, 9499999, 5]),
-					_List_fromArray(
-					[9500000, 9500999, 7]),
-					_List_fromArray(
-					[9501000, 9799999, 4]),
-					_List_fromArray(
-					[9800000, 9899999, 5]),
-					_List_fromArray(
-					[9900000, 9909999, 7]),
-					_List_fromArray(
-					[9910000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-600',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 999999, 2]),
-					_List_fromArray(
-					[1000000, 4999999, 3]),
-					_List_fromArray(
-					[5000000, 8999999, 4]),
-					_List_fromArray(
-					[9000000, 9999999, 5])
-				])),
-			_Utils_Tuple2(
-			'978-601',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 2]),
-					_List_fromArray(
-					[2000000, 6999999, 3]),
-					_List_fromArray(
-					[7000000, 7999999, 4]),
-					_List_fromArray(
-					[8000000, 8499999, 5]),
-					_List_fromArray(
-					[8500000, 9999999, 2])
-				])),
-			_Utils_Tuple2(
-			'978-602',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 799999, 2]),
-					_List_fromArray(
-					[800000, 899999, 4]),
-					_List_fromArray(
-					[900000, 1099999, 4]),
-					_List_fromArray(
-					[1100000, 1199999, 4]),
-					_List_fromArray(
-					[1200000, 1399999, 4]),
-					_List_fromArray(
-					[1400000, 1499999, 5]),
-					_List_fromArray(
-					[1500000, 1699999, 4]),
-					_List_fromArray(
-					[1700000, 1799999, 5]),
-					_List_fromArray(
-					[1800000, 1899999, 5]),
-					_List_fromArray(
-					[1900000, 1999999, 5]),
-					_List_fromArray(
-					[2000000, 5999999, 3]),
-					_List_fromArray(
-					[6000000, 6199999, 5]),
-					_List_fromArray(
-					[6200000, 6749999, 4]),
-					_List_fromArray(
-					[6750000, 6999999, 4]),
-					_List_fromArray(
-					[7000000, 7499999, 5]),
-					_List_fromArray(
-					[7500000, 7999999, 4]),
-					_List_fromArray(
-					[8000000, 9499999, 4]),
-					_List_fromArray(
-					[9500000, 9999999, 5])
-				])),
-			_Utils_Tuple2(
-			'978-603',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 499999, 2]),
-					_List_fromArray(
-					[500000, 4999999, 2]),
-					_List_fromArray(
-					[5000000, 7999999, 3]),
-					_List_fromArray(
-					[8000000, 8999999, 4]),
-					_List_fromArray(
-					[9000000, 9999999, 5])
-				])),
-			_Utils_Tuple2(
-			'978-604',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 4999999, 1]),
-					_List_fromArray(
-					[5000000, 8999999, 2]),
-					_List_fromArray(
-					[9000000, 9799999, 3]),
-					_List_fromArray(
-					[9800000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-605',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 99999, 0]),
-					_List_fromArray(
-					[100000, 299999, 2]),
-					_List_fromArray(
-					[300000, 399999, 3]),
-					_List_fromArray(
-					[400000, 999999, 2]),
-					_List_fromArray(
-					[1000000, 1999999, 3]),
-					_List_fromArray(
-					[2000000, 2399999, 4]),
-					_List_fromArray(
-					[2400000, 3999999, 3]),
-					_List_fromArray(
-					[4000000, 5999999, 4]),
-					_List_fromArray(
-					[6000000, 8999999, 5]),
-					_List_fromArray(
-					[9000000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-606',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 999999, 1]),
-					_List_fromArray(
-					[1000000, 4999999, 2]),
-					_List_fromArray(
-					[5000000, 7999999, 3]),
-					_List_fromArray(
-					[8000000, 9099999, 4]),
-					_List_fromArray(
-					[9100000, 9199999, 3]),
-					_List_fromArray(
-					[9200000, 9749999, 5]),
-					_List_fromArray(
-					[9750000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-607',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 3999999, 2]),
-					_List_fromArray(
-					[4000000, 7499999, 3]),
-					_List_fromArray(
-					[7500000, 9499999, 4]),
-					_List_fromArray(
-					[9500000, 9999999, 5])
-				])),
-			_Utils_Tuple2(
-			'978-608',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 999999, 1]),
-					_List_fromArray(
-					[1000000, 1999999, 2]),
-					_List_fromArray(
-					[2000000, 4499999, 3]),
-					_List_fromArray(
-					[4500000, 6499999, 4]),
-					_List_fromArray(
-					[6500000, 6999999, 5]),
-					_List_fromArray(
-					[7000000, 9999999, 1])
-				])),
-			_Utils_Tuple2(
-			'978-609',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 3999999, 2]),
-					_List_fromArray(
-					[4000000, 7999999, 3]),
-					_List_fromArray(
-					[8000000, 9499999, 4]),
-					_List_fromArray(
-					[9500000, 9999999, 5])
-				])),
-			_Utils_Tuple2(
-			'978-611',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 9999999, 0])
-				])),
-			_Utils_Tuple2(
-			'978-612',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 2999999, 2]),
-					_List_fromArray(
-					[3000000, 3999999, 3]),
-					_List_fromArray(
-					[4000000, 4499999, 4]),
-					_List_fromArray(
-					[4500000, 4999999, 5]),
-					_List_fromArray(
-					[5000000, 9999999, 2])
-				])),
-			_Utils_Tuple2(
-			'978-613',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 9999999, 1])
-				])),
-			_Utils_Tuple2(
-			'978-614',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 3999999, 2]),
-					_List_fromArray(
-					[4000000, 7999999, 3]),
-					_List_fromArray(
-					[8000000, 9499999, 4]),
-					_List_fromArray(
-					[9500000, 9999999, 5])
-				])),
-			_Utils_Tuple2(
-			'978-615',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 999999, 2]),
-					_List_fromArray(
-					[1000000, 4999999, 3]),
-					_List_fromArray(
-					[5000000, 7999999, 4]),
-					_List_fromArray(
-					[8000000, 8999999, 5]),
-					_List_fromArray(
-					[9000000, 9999999, 0])
-				])),
-			_Utils_Tuple2(
-			'978-616',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 2]),
-					_List_fromArray(
-					[2000000, 6999999, 3]),
-					_List_fromArray(
-					[7000000, 8999999, 4]),
-					_List_fromArray(
-					[9000000, 9999999, 5])
-				])),
-			_Utils_Tuple2(
-			'978-617',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 4999999, 2]),
-					_List_fromArray(
-					[5000000, 6999999, 3]),
-					_List_fromArray(
-					[7000000, 8999999, 4]),
-					_List_fromArray(
-					[9000000, 9999999, 5])
-				])),
-			_Utils_Tuple2(
-			'978-618',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 2]),
-					_List_fromArray(
-					[2000000, 4999999, 3]),
-					_List_fromArray(
-					[5000000, 7999999, 4]),
-					_List_fromArray(
-					[8000000, 9999999, 5])
-				])),
-			_Utils_Tuple2(
-			'978-619',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1499999, 2]),
-					_List_fromArray(
-					[1500000, 6999999, 3]),
-					_List_fromArray(
-					[7000000, 8999999, 4]),
-					_List_fromArray(
-					[9000000, 9999999, 5])
-				])),
-			_Utils_Tuple2(
-			'978-620',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 9999999, 1])
-				])),
-			_Utils_Tuple2(
-			'978-621',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 2999999, 2]),
-					_List_fromArray(
-					[3000000, 3999999, 0]),
-					_List_fromArray(
-					[4000000, 5999999, 3]),
-					_List_fromArray(
-					[6000000, 7999999, 0]),
-					_List_fromArray(
-					[8000000, 8999999, 4]),
-					_List_fromArray(
-					[9000000, 9499999, 0]),
-					_List_fromArray(
-					[9500000, 9999999, 5])
-				])),
-			_Utils_Tuple2(
-			'978-7',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 999999, 2]),
-					_List_fromArray(
-					[1000000, 4999999, 3]),
-					_List_fromArray(
-					[5000000, 7999999, 4]),
-					_List_fromArray(
-					[8000000, 8999999, 5]),
-					_List_fromArray(
-					[9000000, 9999999, 6])
-				])),
-			_Utils_Tuple2(
-			'978-80',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 2]),
-					_List_fromArray(
-					[2000000, 6999999, 3]),
-					_List_fromArray(
-					[7000000, 8499999, 4]),
-					_List_fromArray(
-					[8500000, 8999999, 5]),
-					_List_fromArray(
-					[9000000, 9999999, 6])
-				])),
-			_Utils_Tuple2(
-			'978-81',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 2]),
-					_List_fromArray(
-					[2000000, 6999999, 3]),
-					_List_fromArray(
-					[7000000, 8499999, 4]),
-					_List_fromArray(
-					[8500000, 8999999, 5]),
-					_List_fromArray(
-					[9000000, 9999999, 6])
-				])),
-			_Utils_Tuple2(
-			'978-82',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 2]),
-					_List_fromArray(
-					[2000000, 6899999, 3]),
-					_List_fromArray(
-					[6900000, 6999999, 6]),
-					_List_fromArray(
-					[7000000, 8999999, 4]),
-					_List_fromArray(
-					[9000000, 9899999, 5]),
-					_List_fromArray(
-					[9900000, 9999999, 6])
-				])),
-			_Utils_Tuple2(
-			'978-83',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 2]),
-					_List_fromArray(
-					[2000000, 5999999, 3]),
-					_List_fromArray(
-					[6000000, 6999999, 5]),
-					_List_fromArray(
-					[7000000, 8499999, 4]),
-					_List_fromArray(
-					[8500000, 8999999, 5]),
-					_List_fromArray(
-					[9000000, 9999999, 6])
-				])),
-			_Utils_Tuple2(
-			'978-84',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1399999, 2]),
-					_List_fromArray(
-					[1400000, 1499999, 3]),
-					_List_fromArray(
-					[1500000, 1999999, 5]),
-					_List_fromArray(
-					[2000000, 6999999, 3]),
-					_List_fromArray(
-					[7000000, 8499999, 4]),
-					_List_fromArray(
-					[8500000, 8999999, 5]),
-					_List_fromArray(
-					[9000000, 9199999, 4]),
-					_List_fromArray(
-					[9200000, 9239999, 6]),
-					_List_fromArray(
-					[9240000, 9299999, 5]),
-					_List_fromArray(
-					[9300000, 9499999, 6]),
-					_List_fromArray(
-					[9500000, 9699999, 5]),
-					_List_fromArray(
-					[9700000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-85',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 2]),
-					_List_fromArray(
-					[2000000, 5499999, 3]),
-					_List_fromArray(
-					[5500000, 5999999, 4]),
-					_List_fromArray(
-					[6000000, 6999999, 5]),
-					_List_fromArray(
-					[7000000, 8499999, 4]),
-					_List_fromArray(
-					[8500000, 8999999, 5]),
-					_List_fromArray(
-					[9000000, 9249999, 6]),
-					_List_fromArray(
-					[9250000, 9449999, 5]),
-					_List_fromArray(
-					[9450000, 9599999, 4]),
-					_List_fromArray(
-					[9600000, 9799999, 2]),
-					_List_fromArray(
-					[9800000, 9999999, 5])
-				])),
-			_Utils_Tuple2(
-			'978-86',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 2999999, 2]),
-					_List_fromArray(
-					[3000000, 5999999, 3]),
-					_List_fromArray(
-					[6000000, 7999999, 4]),
-					_List_fromArray(
-					[8000000, 8999999, 5]),
-					_List_fromArray(
-					[9000000, 9999999, 6])
-				])),
-			_Utils_Tuple2(
-			'978-87',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 2999999, 2]),
-					_List_fromArray(
-					[3000000, 3999999, 0]),
-					_List_fromArray(
-					[4000000, 6499999, 3]),
-					_List_fromArray(
-					[6500000, 6999999, 0]),
-					_List_fromArray(
-					[7000000, 7999999, 4]),
-					_List_fromArray(
-					[8000000, 8499999, 0]),
-					_List_fromArray(
-					[8500000, 9499999, 5]),
-					_List_fromArray(
-					[9500000, 9699999, 0]),
-					_List_fromArray(
-					[9700000, 9999999, 6])
-				])),
-			_Utils_Tuple2(
-			'978-88',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 2]),
-					_List_fromArray(
-					[2000000, 3269999, 3]),
-					_List_fromArray(
-					[3270000, 3389999, 4]),
-					_List_fromArray(
-					[3390000, 5999999, 3]),
-					_List_fromArray(
-					[6000000, 8499999, 4]),
-					_List_fromArray(
-					[8500000, 8999999, 5]),
-					_List_fromArray(
-					[9000000, 9099999, 6]),
-					_List_fromArray(
-					[9100000, 9299999, 3]),
-					_List_fromArray(
-					[9300000, 9399999, 4]),
-					_List_fromArray(
-					[9400000, 9479999, 6]),
-					_List_fromArray(
-					[9480000, 9499999, 5]),
-					_List_fromArray(
-					[9500000, 9999999, 5])
-				])),
-			_Utils_Tuple2(
-			'978-89',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 2499999, 2]),
-					_List_fromArray(
-					[2500000, 5499999, 3]),
-					_List_fromArray(
-					[5500000, 8499999, 4]),
-					_List_fromArray(
-					[8500000, 9499999, 5]),
-					_List_fromArray(
-					[9500000, 9699999, 6]),
-					_List_fromArray(
-					[9700000, 9899999, 5]),
-					_List_fromArray(
-					[9900000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-90',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 2]),
-					_List_fromArray(
-					[2000000, 4999999, 3]),
-					_List_fromArray(
-					[5000000, 6999999, 4]),
-					_List_fromArray(
-					[7000000, 7999999, 5]),
-					_List_fromArray(
-					[8000000, 8499999, 6]),
-					_List_fromArray(
-					[8500000, 8999999, 4]),
-					_List_fromArray(
-					[9000000, 9099999, 2]),
-					_List_fromArray(
-					[9100000, 9399999, 0]),
-					_List_fromArray(
-					[9400000, 9499999, 2]),
-					_List_fromArray(
-					[9500000, 9999999, 0])
-				])),
-			_Utils_Tuple2(
-			'978-91',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 1]),
-					_List_fromArray(
-					[2000000, 4999999, 2]),
-					_List_fromArray(
-					[5000000, 6499999, 3]),
-					_List_fromArray(
-					[6500000, 6999999, 0]),
-					_List_fromArray(
-					[7000000, 7999999, 4]),
-					_List_fromArray(
-					[8000000, 8499999, 0]),
-					_List_fromArray(
-					[8500000, 9499999, 5]),
-					_List_fromArray(
-					[9500000, 9699999, 0]),
-					_List_fromArray(
-					[9700000, 9999999, 6])
-				])),
-			_Utils_Tuple2(
-			'978-92',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 5999999, 1]),
-					_List_fromArray(
-					[6000000, 7999999, 2]),
-					_List_fromArray(
-					[8000000, 8999999, 3]),
-					_List_fromArray(
-					[9000000, 9499999, 4]),
-					_List_fromArray(
-					[9500000, 9899999, 5]),
-					_List_fromArray(
-					[9900000, 9999999, 6])
-				])),
-			_Utils_Tuple2(
-			'978-93',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 999999, 2]),
-					_List_fromArray(
-					[1000000, 4999999, 3]),
-					_List_fromArray(
-					[5000000, 7999999, 4]),
-					_List_fromArray(
-					[8000000, 9499999, 5]),
-					_List_fromArray(
-					[9500000, 9999999, 6])
-				])),
-			_Utils_Tuple2(
-			'978-94',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 5999999, 3]),
-					_List_fromArray(
-					[6000000, 8999999, 4]),
-					_List_fromArray(
-					[9000000, 9999999, 5])
-				])),
-			_Utils_Tuple2(
-			'978-950',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 4999999, 2]),
-					_List_fromArray(
-					[5000000, 8999999, 3]),
-					_List_fromArray(
-					[9000000, 9899999, 4]),
-					_List_fromArray(
-					[9900000, 9999999, 5])
-				])),
-			_Utils_Tuple2(
-			'978-951',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 1]),
-					_List_fromArray(
-					[2000000, 5499999, 2]),
-					_List_fromArray(
-					[5500000, 8899999, 3]),
-					_List_fromArray(
-					[8900000, 9499999, 4]),
-					_List_fromArray(
-					[9500000, 9999999, 5])
-				])),
-			_Utils_Tuple2(
-			'978-952',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 2]),
-					_List_fromArray(
-					[2000000, 4999999, 3]),
-					_List_fromArray(
-					[5000000, 5999999, 4]),
-					_List_fromArray(
-					[6000000, 6599999, 2]),
-					_List_fromArray(
-					[6600000, 6699999, 4]),
-					_List_fromArray(
-					[6700000, 6999999, 5]),
-					_List_fromArray(
-					[7000000, 7999999, 4]),
-					_List_fromArray(
-					[8000000, 9499999, 2]),
-					_List_fromArray(
-					[9500000, 9899999, 4]),
-					_List_fromArray(
-					[9900000, 9999999, 5])
-				])),
-			_Utils_Tuple2(
-			'978-953',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 999999, 1]),
-					_List_fromArray(
-					[1000000, 1499999, 2]),
-					_List_fromArray(
-					[1500000, 5099999, 3]),
-					_List_fromArray(
-					[5100000, 5499999, 2]),
-					_List_fromArray(
-					[5500000, 5999999, 5]),
-					_List_fromArray(
-					[6000000, 9499999, 4]),
-					_List_fromArray(
-					[9500000, 9999999, 5])
-				])),
-			_Utils_Tuple2(
-			'978-954',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 2899999, 2]),
-					_List_fromArray(
-					[2900000, 2999999, 4]),
-					_List_fromArray(
-					[3000000, 7999999, 3]),
-					_List_fromArray(
-					[8000000, 8999999, 4]),
-					_List_fromArray(
-					[9000000, 9299999, 5]),
-					_List_fromArray(
-					[9300000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-955',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 4]),
-					_List_fromArray(
-					[2000000, 3799999, 2]),
-					_List_fromArray(
-					[3800000, 3899999, 5]),
-					_List_fromArray(
-					[3900000, 4099999, 4]),
-					_List_fromArray(
-					[4100000, 4399999, 5]),
-					_List_fromArray(
-					[4400000, 4499999, 5]),
-					_List_fromArray(
-					[4500000, 4999999, 4]),
-					_List_fromArray(
-					[5000000, 5499999, 5]),
-					_List_fromArray(
-					[5500000, 7199999, 3]),
-					_List_fromArray(
-					[7200000, 7499999, 4]),
-					_List_fromArray(
-					[7500000, 7999999, 4]),
-					_List_fromArray(
-					[8000000, 9499999, 4]),
-					_List_fromArray(
-					[9500000, 9999999, 5])
-				])),
-			_Utils_Tuple2(
-			'978-956',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 899999, 2]),
-					_List_fromArray(
-					[900000, 999999, 5]),
-					_List_fromArray(
-					[1000000, 1999999, 2]),
-					_List_fromArray(
-					[2000000, 5999999, 3]),
-					_List_fromArray(
-					[6000000, 6999999, 4]),
-					_List_fromArray(
-					[7000000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-957',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 299999, 2]),
-					_List_fromArray(
-					[300000, 499999, 4]),
-					_List_fromArray(
-					[500000, 1999999, 2]),
-					_List_fromArray(
-					[2000000, 2099999, 4]),
-					_List_fromArray(
-					[2100000, 2799999, 2]),
-					_List_fromArray(
-					[2800000, 3099999, 5]),
-					_List_fromArray(
-					[3100000, 4399999, 2]),
-					_List_fromArray(
-					[4400000, 8199999, 3]),
-					_List_fromArray(
-					[8200000, 9699999, 4]),
-					_List_fromArray(
-					[9700000, 9999999, 5])
-				])),
-			_Utils_Tuple2(
-			'978-958',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 5399999, 2]),
-					_List_fromArray(
-					[5400000, 5599999, 4]),
-					_List_fromArray(
-					[5600000, 5699999, 5]),
-					_List_fromArray(
-					[5700000, 5999999, 5]),
-					_List_fromArray(
-					[6000000, 7999999, 3]),
-					_List_fromArray(
-					[8000000, 9499999, 4]),
-					_List_fromArray(
-					[9500000, 9999999, 5])
-				])),
-			_Utils_Tuple2(
-			'978-959',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 2]),
-					_List_fromArray(
-					[2000000, 6999999, 3]),
-					_List_fromArray(
-					[7000000, 8499999, 4]),
-					_List_fromArray(
-					[8500000, 9999999, 5])
-				])),
-			_Utils_Tuple2(
-			'978-960',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 2]),
-					_List_fromArray(
-					[2000000, 6599999, 3]),
-					_List_fromArray(
-					[6600000, 6899999, 4]),
-					_List_fromArray(
-					[6900000, 6999999, 3]),
-					_List_fromArray(
-					[7000000, 8499999, 4]),
-					_List_fromArray(
-					[8500000, 9299999, 5]),
-					_List_fromArray(
-					[9300000, 9399999, 2]),
-					_List_fromArray(
-					[9400000, 9799999, 4]),
-					_List_fromArray(
-					[9800000, 9999999, 5])
-				])),
-			_Utils_Tuple2(
-			'978-961',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 2]),
-					_List_fromArray(
-					[2000000, 5999999, 3]),
-					_List_fromArray(
-					[6000000, 8999999, 4]),
-					_List_fromArray(
-					[9000000, 9499999, 5]),
-					_List_fromArray(
-					[9500000, 9999999, 0])
-				])),
-			_Utils_Tuple2(
-			'978-962',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 2]),
-					_List_fromArray(
-					[2000000, 6999999, 3]),
-					_List_fromArray(
-					[7000000, 8499999, 4]),
-					_List_fromArray(
-					[8500000, 8699999, 5]),
-					_List_fromArray(
-					[8700000, 8999999, 4]),
-					_List_fromArray(
-					[9000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-963',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 2]),
-					_List_fromArray(
-					[2000000, 6999999, 3]),
-					_List_fromArray(
-					[7000000, 8499999, 4]),
-					_List_fromArray(
-					[8500000, 8999999, 5]),
-					_List_fromArray(
-					[9000000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-964',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1499999, 2]),
-					_List_fromArray(
-					[1500000, 2499999, 3]),
-					_List_fromArray(
-					[2500000, 2999999, 4]),
-					_List_fromArray(
-					[3000000, 5499999, 3]),
-					_List_fromArray(
-					[5500000, 8999999, 4]),
-					_List_fromArray(
-					[9000000, 9699999, 5]),
-					_List_fromArray(
-					[9700000, 9899999, 3]),
-					_List_fromArray(
-					[9900000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-965',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 2]),
-					_List_fromArray(
-					[2000000, 5999999, 3]),
-					_List_fromArray(
-					[6000000, 6999999, 0]),
-					_List_fromArray(
-					[7000000, 7999999, 4]),
-					_List_fromArray(
-					[8000000, 8999999, 0]),
-					_List_fromArray(
-					[9000000, 9999999, 5])
-				])),
-			_Utils_Tuple2(
-			'978-966',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1299999, 2]),
-					_List_fromArray(
-					[1300000, 1399999, 3]),
-					_List_fromArray(
-					[1400000, 1499999, 2]),
-					_List_fromArray(
-					[1500000, 1699999, 4]),
-					_List_fromArray(
-					[1700000, 1999999, 3]),
-					_List_fromArray(
-					[2000000, 2789999, 4]),
-					_List_fromArray(
-					[2790000, 2899999, 3]),
-					_List_fromArray(
-					[2900000, 2999999, 4]),
-					_List_fromArray(
-					[3000000, 6999999, 3]),
-					_List_fromArray(
-					[7000000, 8999999, 4]),
-					_List_fromArray(
-					[9000000, 9099999, 5]),
-					_List_fromArray(
-					[9100000, 9499999, 3]),
-					_List_fromArray(
-					[9500000, 9799999, 5]),
-					_List_fromArray(
-					[9800000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-967',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 99999, 2]),
-					_List_fromArray(
-					[100000, 999999, 4]),
-					_List_fromArray(
-					[1000000, 1999999, 5]),
-					_List_fromArray(
-					[2000000, 2499999, 4]),
-					_List_fromArray(
-					[2500000, 2999999, 0]),
-					_List_fromArray(
-					[3000000, 4999999, 3]),
-					_List_fromArray(
-					[5000000, 5999999, 4]),
-					_List_fromArray(
-					[6000000, 8999999, 2]),
-					_List_fromArray(
-					[9000000, 9899999, 3]),
-					_List_fromArray(
-					[9900000, 9989999, 4]),
-					_List_fromArray(
-					[9990000, 9999999, 5])
-				])),
-			_Utils_Tuple2(
-			'978-968',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[100000, 3999999, 2]),
-					_List_fromArray(
-					[4000000, 4999999, 3]),
-					_List_fromArray(
-					[5000000, 7999999, 4]),
-					_List_fromArray(
-					[8000000, 8999999, 3]),
-					_List_fromArray(
-					[9000000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-969',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 1]),
-					_List_fromArray(
-					[2000000, 2299999, 2]),
-					_List_fromArray(
-					[2300000, 2399999, 5]),
-					_List_fromArray(
-					[2400000, 3999999, 2]),
-					_List_fromArray(
-					[4000000, 7499999, 3]),
-					_List_fromArray(
-					[7500000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-970',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[100000, 5999999, 2]),
-					_List_fromArray(
-					[6000000, 8999999, 3]),
-					_List_fromArray(
-					[9000000, 9099999, 4]),
-					_List_fromArray(
-					[9100000, 9699999, 5]),
-					_List_fromArray(
-					[9700000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-971',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 159999, 3]),
-					_List_fromArray(
-					[160000, 199999, 4]),
-					_List_fromArray(
-					[200000, 299999, 2]),
-					_List_fromArray(
-					[300000, 599999, 4]),
-					_List_fromArray(
-					[600000, 4999999, 2]),
-					_List_fromArray(
-					[5000000, 8499999, 3]),
-					_List_fromArray(
-					[8500000, 9099999, 4]),
-					_List_fromArray(
-					[9100000, 9599999, 5]),
-					_List_fromArray(
-					[9600000, 9699999, 4]),
-					_List_fromArray(
-					[9700000, 9899999, 2]),
-					_List_fromArray(
-					[9900000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-972',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 1]),
-					_List_fromArray(
-					[2000000, 5499999, 2]),
-					_List_fromArray(
-					[5500000, 7999999, 3]),
-					_List_fromArray(
-					[8000000, 9499999, 4]),
-					_List_fromArray(
-					[9500000, 9999999, 5])
-				])),
-			_Utils_Tuple2(
-			'978-973',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 999999, 1]),
-					_List_fromArray(
-					[1000000, 1699999, 3]),
-					_List_fromArray(
-					[1700000, 1999999, 4]),
-					_List_fromArray(
-					[2000000, 5499999, 2]),
-					_List_fromArray(
-					[5500000, 7599999, 3]),
-					_List_fromArray(
-					[7600000, 8499999, 4]),
-					_List_fromArray(
-					[8500000, 8899999, 5]),
-					_List_fromArray(
-					[8900000, 9499999, 4]),
-					_List_fromArray(
-					[9500000, 9999999, 5])
-				])),
-			_Utils_Tuple2(
-			'978-974',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 2]),
-					_List_fromArray(
-					[2000000, 6999999, 3]),
-					_List_fromArray(
-					[7000000, 8499999, 4]),
-					_List_fromArray(
-					[8500000, 8999999, 5]),
-					_List_fromArray(
-					[9000000, 9499999, 5]),
-					_List_fromArray(
-					[9500000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-975',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 199999, 5]),
-					_List_fromArray(
-					[200000, 2399999, 2]),
-					_List_fromArray(
-					[2400000, 2499999, 4]),
-					_List_fromArray(
-					[2500000, 5999999, 3]),
-					_List_fromArray(
-					[6000000, 9199999, 4]),
-					_List_fromArray(
-					[9200000, 9899999, 5]),
-					_List_fromArray(
-					[9900000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-976',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 3999999, 1]),
-					_List_fromArray(
-					[4000000, 5999999, 2]),
-					_List_fromArray(
-					[6000000, 7999999, 3]),
-					_List_fromArray(
-					[8000000, 9499999, 4]),
-					_List_fromArray(
-					[9500000, 9999999, 5])
-				])),
-			_Utils_Tuple2(
-			'978-977',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 2]),
-					_List_fromArray(
-					[2000000, 4999999, 3]),
-					_List_fromArray(
-					[5000000, 6999999, 4]),
-					_List_fromArray(
-					[7000000, 8499999, 3]),
-					_List_fromArray(
-					[8500000, 8999999, 5]),
-					_List_fromArray(
-					[9000000, 9999999, 2])
-				])),
-			_Utils_Tuple2(
-			'978-978',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 3]),
-					_List_fromArray(
-					[2000000, 2999999, 4]),
-					_List_fromArray(
-					[3000000, 7999999, 5]),
-					_List_fromArray(
-					[8000000, 8999999, 4]),
-					_List_fromArray(
-					[9000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-979',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 999999, 3]),
-					_List_fromArray(
-					[1000000, 1499999, 4]),
-					_List_fromArray(
-					[1500000, 1999999, 5]),
-					_List_fromArray(
-					[2000000, 2999999, 2]),
-					_List_fromArray(
-					[3000000, 3999999, 4]),
-					_List_fromArray(
-					[4000000, 7999999, 3]),
-					_List_fromArray(
-					[8000000, 9499999, 4]),
-					_List_fromArray(
-					[9500000, 9999999, 5])
-				])),
-			_Utils_Tuple2(
-			'978-980',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 2]),
-					_List_fromArray(
-					[2000000, 5999999, 3]),
-					_List_fromArray(
-					[6000000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-981',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1699999, 2]),
-					_List_fromArray(
-					[1700000, 1999999, 5]),
-					_List_fromArray(
-					[2000000, 2999999, 3]),
-					_List_fromArray(
-					[3000000, 3099999, 4]),
-					_List_fromArray(
-					[3100000, 3999999, 3]),
-					_List_fromArray(
-					[4000000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-982',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 999999, 2]),
-					_List_fromArray(
-					[1000000, 6999999, 3]),
-					_List_fromArray(
-					[7000000, 8999999, 2]),
-					_List_fromArray(
-					[9000000, 9799999, 4]),
-					_List_fromArray(
-					[9800000, 9999999, 5])
-				])),
-			_Utils_Tuple2(
-			'978-983',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 199999, 2]),
-					_List_fromArray(
-					[200000, 1999999, 3]),
-					_List_fromArray(
-					[2000000, 3999999, 4]),
-					_List_fromArray(
-					[4000000, 4499999, 5]),
-					_List_fromArray(
-					[4500000, 4999999, 2]),
-					_List_fromArray(
-					[5000000, 7999999, 2]),
-					_List_fromArray(
-					[8000000, 8999999, 3]),
-					_List_fromArray(
-					[9000000, 9899999, 4]),
-					_List_fromArray(
-					[9900000, 9999999, 5])
-				])),
-			_Utils_Tuple2(
-			'978-984',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 3999999, 2]),
-					_List_fromArray(
-					[4000000, 7999999, 3]),
-					_List_fromArray(
-					[8000000, 8999999, 4]),
-					_List_fromArray(
-					[9000000, 9999999, 5])
-				])),
-			_Utils_Tuple2(
-			'978-985',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 3999999, 2]),
-					_List_fromArray(
-					[4000000, 5999999, 3]),
-					_List_fromArray(
-					[6000000, 8999999, 4]),
-					_List_fromArray(
-					[9000000, 9999999, 5])
-				])),
-			_Utils_Tuple2(
-			'978-986',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1199999, 2]),
-					_List_fromArray(
-					[1200000, 5599999, 3]),
-					_List_fromArray(
-					[5600000, 7999999, 4]),
-					_List_fromArray(
-					[8000000, 9999999, 5])
-				])),
-			_Utils_Tuple2(
-			'978-987',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 999999, 2]),
-					_List_fromArray(
-					[1000000, 1999999, 4]),
-					_List_fromArray(
-					[2000000, 2999999, 5]),
-					_List_fromArray(
-					[3000000, 3599999, 2]),
-					_List_fromArray(
-					[3600000, 3999999, 4]),
-					_List_fromArray(
-					[4000000, 4199999, 4]),
-					_List_fromArray(
-					[4200000, 4399999, 2]),
-					_List_fromArray(
-					[4400000, 4499999, 4]),
-					_List_fromArray(
-					[4500000, 4899999, 5]),
-					_List_fromArray(
-					[4900000, 4999999, 4]),
-					_List_fromArray(
-					[5000000, 8999999, 3]),
-					_List_fromArray(
-					[9000000, 9499999, 4]),
-					_List_fromArray(
-					[9500000, 9999999, 5])
-				])),
-			_Utils_Tuple2(
-			'978-988',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1199999, 2]),
-					_List_fromArray(
-					[1200000, 1499999, 5]),
-					_List_fromArray(
-					[1500000, 1699999, 5]),
-					_List_fromArray(
-					[1700000, 1999999, 5]),
-					_List_fromArray(
-					[2000000, 7699999, 3]),
-					_List_fromArray(
-					[7700000, 7999999, 5]),
-					_List_fromArray(
-					[8000000, 9699999, 4]),
-					_List_fromArray(
-					[9700000, 9999999, 5])
-				])),
-			_Utils_Tuple2(
-			'978-989',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 1]),
-					_List_fromArray(
-					[2000000, 5499999, 2]),
-					_List_fromArray(
-					[5500000, 7999999, 3]),
-					_List_fromArray(
-					[8000000, 9499999, 4]),
-					_List_fromArray(
-					[9500000, 9999999, 5])
-				])),
-			_Utils_Tuple2(
-			'978-9924',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 2999999, 0]),
-					_List_fromArray(
-					[3000000, 3999999, 2]),
-					_List_fromArray(
-					[4000000, 4999999, 0]),
-					_List_fromArray(
-					[5000000, 6499999, 3]),
-					_List_fromArray(
-					[6500000, 8999999, 0]),
-					_List_fromArray(
-					[9000000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9925',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 2999999, 1]),
-					_List_fromArray(
-					[3000000, 5499999, 2]),
-					_List_fromArray(
-					[5500000, 7349999, 3]),
-					_List_fromArray(
-					[7350000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9926',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 1]),
-					_List_fromArray(
-					[2000000, 3999999, 2]),
-					_List_fromArray(
-					[4000000, 7999999, 3]),
-					_List_fromArray(
-					[8000000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9927',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 999999, 2]),
-					_List_fromArray(
-					[1000000, 3999999, 3]),
-					_List_fromArray(
-					[4000000, 4999999, 4]),
-					_List_fromArray(
-					[5000000, 9999999, 0])
-				])),
-			_Utils_Tuple2(
-			'978-9928',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 999999, 2]),
-					_List_fromArray(
-					[1000000, 3999999, 3]),
-					_List_fromArray(
-					[4000000, 4999999, 4]),
-					_List_fromArray(
-					[5000000, 9999999, 0])
-				])),
-			_Utils_Tuple2(
-			'978-9929',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 3999999, 1]),
-					_List_fromArray(
-					[4000000, 5499999, 2]),
-					_List_fromArray(
-					[5500000, 7999999, 3]),
-					_List_fromArray(
-					[8000000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9930',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 4999999, 2]),
-					_List_fromArray(
-					[5000000, 9399999, 3]),
-					_List_fromArray(
-					[9400000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9931',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 2999999, 2]),
-					_List_fromArray(
-					[3000000, 8999999, 3]),
-					_List_fromArray(
-					[9000000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9932',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 3999999, 2]),
-					_List_fromArray(
-					[4000000, 8499999, 3]),
-					_List_fromArray(
-					[8500000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9933',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 999999, 1]),
-					_List_fromArray(
-					[1000000, 3999999, 2]),
-					_List_fromArray(
-					[4000000, 8999999, 3]),
-					_List_fromArray(
-					[9000000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9934',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 999999, 1]),
-					_List_fromArray(
-					[1000000, 4999999, 2]),
-					_List_fromArray(
-					[5000000, 7999999, 3]),
-					_List_fromArray(
-					[8000000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9935',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 999999, 1]),
-					_List_fromArray(
-					[1000000, 3999999, 2]),
-					_List_fromArray(
-					[4000000, 8999999, 3]),
-					_List_fromArray(
-					[9000000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9936',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 1]),
-					_List_fromArray(
-					[2000000, 3999999, 2]),
-					_List_fromArray(
-					[4000000, 7999999, 3]),
-					_List_fromArray(
-					[8000000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9937',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 2999999, 1]),
-					_List_fromArray(
-					[3000000, 4999999, 2]),
-					_List_fromArray(
-					[5000000, 7999999, 3]),
-					_List_fromArray(
-					[8000000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9938',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 7999999, 2]),
-					_List_fromArray(
-					[8000000, 9499999, 3]),
-					_List_fromArray(
-					[9500000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9939',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 4999999, 1]),
-					_List_fromArray(
-					[5000000, 7999999, 2]),
-					_List_fromArray(
-					[8000000, 8999999, 3]),
-					_List_fromArray(
-					[9000000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9940',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 1]),
-					_List_fromArray(
-					[2000000, 4999999, 2]),
-					_List_fromArray(
-					[5000000, 8999999, 3]),
-					_List_fromArray(
-					[9000000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9941',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 999999, 1]),
-					_List_fromArray(
-					[1000000, 3999999, 2]),
-					_List_fromArray(
-					[4000000, 8999999, 3]),
-					_List_fromArray(
-					[9000000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9942',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 7499999, 2]),
-					_List_fromArray(
-					[7500000, 8499999, 3]),
-					_List_fromArray(
-					[8500000, 8999999, 4]),
-					_List_fromArray(
-					[9000000, 9849999, 3]),
-					_List_fromArray(
-					[9850000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9943',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 2999999, 2]),
-					_List_fromArray(
-					[3000000, 3999999, 3]),
-					_List_fromArray(
-					[4000000, 9749999, 4]),
-					_List_fromArray(
-					[9750000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-9944',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 999999, 4]),
-					_List_fromArray(
-					[1000000, 4999999, 3]),
-					_List_fromArray(
-					[5000000, 5999999, 4]),
-					_List_fromArray(
-					[6000000, 6999999, 2]),
-					_List_fromArray(
-					[7000000, 7999999, 3]),
-					_List_fromArray(
-					[8000000, 8999999, 2]),
-					_List_fromArray(
-					[9000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-9945',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 99999, 2]),
-					_List_fromArray(
-					[100000, 799999, 3]),
-					_List_fromArray(
-					[800000, 3999999, 2]),
-					_List_fromArray(
-					[4000000, 5699999, 3]),
-					_List_fromArray(
-					[5700000, 5799999, 2]),
-					_List_fromArray(
-					[5800000, 8499999, 3]),
-					_List_fromArray(
-					[8500000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9946',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 1]),
-					_List_fromArray(
-					[2000000, 3999999, 2]),
-					_List_fromArray(
-					[4000000, 8999999, 3]),
-					_List_fromArray(
-					[9000000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9947',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 1]),
-					_List_fromArray(
-					[2000000, 7999999, 2]),
-					_List_fromArray(
-					[8000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-9948',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 3999999, 2]),
-					_List_fromArray(
-					[4000000, 8499999, 3]),
-					_List_fromArray(
-					[8500000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9949',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 999999, 1]),
-					_List_fromArray(
-					[1000000, 3999999, 2]),
-					_List_fromArray(
-					[4000000, 7499999, 3]),
-					_List_fromArray(
-					[7500000, 8999999, 2]),
-					_List_fromArray(
-					[9000000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9950',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 2999999, 2]),
-					_List_fromArray(
-					[3000000, 8499999, 3]),
-					_List_fromArray(
-					[8500000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9951',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 3999999, 2]),
-					_List_fromArray(
-					[4000000, 8499999, 3]),
-					_List_fromArray(
-					[8500000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9952',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 1]),
-					_List_fromArray(
-					[2000000, 3999999, 2]),
-					_List_fromArray(
-					[4000000, 7999999, 3]),
-					_List_fromArray(
-					[8000000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9953',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 999999, 1]),
-					_List_fromArray(
-					[1000000, 3999999, 2]),
-					_List_fromArray(
-					[4000000, 5999999, 3]),
-					_List_fromArray(
-					[6000000, 8999999, 2]),
-					_List_fromArray(
-					[9000000, 9299999, 4]),
-					_List_fromArray(
-					[9300000, 9699999, 2]),
-					_List_fromArray(
-					[9700000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-9954',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 1]),
-					_List_fromArray(
-					[2000000, 3999999, 2]),
-					_List_fromArray(
-					[4000000, 7999999, 3]),
-					_List_fromArray(
-					[8000000, 9899999, 4]),
-					_List_fromArray(
-					[9900000, 9999999, 2])
-				])),
-			_Utils_Tuple2(
-			'978-9955',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 3999999, 2]),
-					_List_fromArray(
-					[4000000, 9299999, 3]),
-					_List_fromArray(
-					[9300000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9956',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 999999, 1]),
-					_List_fromArray(
-					[1000000, 3999999, 2]),
-					_List_fromArray(
-					[4000000, 8999999, 3]),
-					_List_fromArray(
-					[9000000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9957',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 3999999, 2]),
-					_List_fromArray(
-					[4000000, 6499999, 3]),
-					_List_fromArray(
-					[6500000, 6799999, 2]),
-					_List_fromArray(
-					[6800000, 6899999, 3]),
-					_List_fromArray(
-					[6900000, 6999999, 3]),
-					_List_fromArray(
-					[7000000, 8499999, 2]),
-					_List_fromArray(
-					[8500000, 8799999, 4]),
-					_List_fromArray(
-					[8800000, 9999999, 2])
-				])),
-			_Utils_Tuple2(
-			'978-9958',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 199999, 2]),
-					_List_fromArray(
-					[200000, 299999, 3]),
-					_List_fromArray(
-					[300000, 399999, 4]),
-					_List_fromArray(
-					[400000, 899999, 3]),
-					_List_fromArray(
-					[900000, 999999, 4]),
-					_List_fromArray(
-					[1000000, 1899999, 2]),
-					_List_fromArray(
-					[1900000, 1999999, 4]),
-					_List_fromArray(
-					[2000000, 4999999, 2]),
-					_List_fromArray(
-					[5000000, 8999999, 3]),
-					_List_fromArray(
-					[9000000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9959',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 1]),
-					_List_fromArray(
-					[2000000, 7999999, 2]),
-					_List_fromArray(
-					[8000000, 9499999, 3]),
-					_List_fromArray(
-					[9500000, 9699999, 4]),
-					_List_fromArray(
-					[9700000, 9799999, 3]),
-					_List_fromArray(
-					[9800000, 9999999, 2])
-				])),
-			_Utils_Tuple2(
-			'978-9960',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 5999999, 2]),
-					_List_fromArray(
-					[6000000, 8999999, 3]),
-					_List_fromArray(
-					[9000000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9961',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 2999999, 1]),
-					_List_fromArray(
-					[3000000, 6999999, 2]),
-					_List_fromArray(
-					[7000000, 9499999, 3]),
-					_List_fromArray(
-					[9500000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9962',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 5499999, 2]),
-					_List_fromArray(
-					[5500000, 5599999, 4]),
-					_List_fromArray(
-					[5600000, 5999999, 2]),
-					_List_fromArray(
-					[6000000, 8499999, 3]),
-					_List_fromArray(
-					[8500000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9963',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 1]),
-					_List_fromArray(
-					[2000000, 2499999, 4]),
-					_List_fromArray(
-					[2500000, 2799999, 3]),
-					_List_fromArray(
-					[2800000, 2999999, 4]),
-					_List_fromArray(
-					[3000000, 5499999, 2]),
-					_List_fromArray(
-					[5500000, 7349999, 3]),
-					_List_fromArray(
-					[7350000, 7499999, 4]),
-					_List_fromArray(
-					[7500000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9964',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 6999999, 1]),
-					_List_fromArray(
-					[7000000, 9499999, 2]),
-					_List_fromArray(
-					[9500000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-9965',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 3999999, 2]),
-					_List_fromArray(
-					[4000000, 8999999, 3]),
-					_List_fromArray(
-					[9000000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9966',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1499999, 3]),
-					_List_fromArray(
-					[1500000, 1999999, 4]),
-					_List_fromArray(
-					[2000000, 6999999, 2]),
-					_List_fromArray(
-					[7000000, 7499999, 4]),
-					_List_fromArray(
-					[7500000, 9599999, 3]),
-					_List_fromArray(
-					[9600000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9967',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 3999999, 2]),
-					_List_fromArray(
-					[4000000, 8999999, 3]),
-					_List_fromArray(
-					[9000000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9968',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 4999999, 2]),
-					_List_fromArray(
-					[5000000, 9399999, 3]),
-					_List_fromArray(
-					[9400000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9970',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 3999999, 2]),
-					_List_fromArray(
-					[4000000, 8999999, 3]),
-					_List_fromArray(
-					[9000000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9971',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 5999999, 1]),
-					_List_fromArray(
-					[6000000, 8999999, 2]),
-					_List_fromArray(
-					[9000000, 9899999, 3]),
-					_List_fromArray(
-					[9900000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9972',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 999999, 2]),
-					_List_fromArray(
-					[1000000, 1999999, 1]),
-					_List_fromArray(
-					[2000000, 2499999, 3]),
-					_List_fromArray(
-					[2500000, 2999999, 4]),
-					_List_fromArray(
-					[3000000, 5999999, 2]),
-					_List_fromArray(
-					[6000000, 8999999, 3]),
-					_List_fromArray(
-					[9000000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9973',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 599999, 2]),
-					_List_fromArray(
-					[600000, 899999, 3]),
-					_List_fromArray(
-					[900000, 999999, 4]),
-					_List_fromArray(
-					[1000000, 6999999, 2]),
-					_List_fromArray(
-					[7000000, 9699999, 3]),
-					_List_fromArray(
-					[9700000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9974',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 2999999, 1]),
-					_List_fromArray(
-					[3000000, 5499999, 2]),
-					_List_fromArray(
-					[5500000, 7499999, 3]),
-					_List_fromArray(
-					[7500000, 8799999, 4]),
-					_List_fromArray(
-					[8800000, 9099999, 3]),
-					_List_fromArray(
-					[9100000, 9499999, 2]),
-					_List_fromArray(
-					[9500000, 9999999, 2])
-				])),
-			_Utils_Tuple2(
-			'978-9975',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 999999, 1]),
-					_List_fromArray(
-					[1000000, 2999999, 3]),
-					_List_fromArray(
-					[3000000, 3999999, 4]),
-					_List_fromArray(
-					[4000000, 4499999, 4]),
-					_List_fromArray(
-					[4500000, 8999999, 2]),
-					_List_fromArray(
-					[9000000, 9499999, 3]),
-					_List_fromArray(
-					[9500000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9976',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 4999999, 1]),
-					_List_fromArray(
-					[5000000, 5999999, 4]),
-					_List_fromArray(
-					[6000000, 8999999, 2]),
-					_List_fromArray(
-					[9000000, 9899999, 3]),
-					_List_fromArray(
-					[9900000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9977',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 8999999, 2]),
-					_List_fromArray(
-					[9000000, 9899999, 3]),
-					_List_fromArray(
-					[9900000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9978',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 2999999, 2]),
-					_List_fromArray(
-					[3000000, 3999999, 3]),
-					_List_fromArray(
-					[4000000, 9499999, 2]),
-					_List_fromArray(
-					[9500000, 9899999, 3]),
-					_List_fromArray(
-					[9900000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9979',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 4999999, 1]),
-					_List_fromArray(
-					[5000000, 6499999, 2]),
-					_List_fromArray(
-					[6500000, 6599999, 3]),
-					_List_fromArray(
-					[6600000, 7599999, 2]),
-					_List_fromArray(
-					[7600000, 8999999, 3]),
-					_List_fromArray(
-					[9000000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9980',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 3999999, 1]),
-					_List_fromArray(
-					[4000000, 8999999, 2]),
-					_List_fromArray(
-					[9000000, 9899999, 3]),
-					_List_fromArray(
-					[9900000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9981',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 999999, 2]),
-					_List_fromArray(
-					[1000000, 1599999, 3]),
-					_List_fromArray(
-					[1600000, 1999999, 4]),
-					_List_fromArray(
-					[2000000, 7999999, 2]),
-					_List_fromArray(
-					[8000000, 9499999, 3]),
-					_List_fromArray(
-					[9500000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9982',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 7999999, 2]),
-					_List_fromArray(
-					[8000000, 9899999, 3]),
-					_List_fromArray(
-					[9900000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9983',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 7999999, 0]),
-					_List_fromArray(
-					[8000000, 9499999, 2]),
-					_List_fromArray(
-					[9500000, 9899999, 3]),
-					_List_fromArray(
-					[9900000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9984',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 4999999, 2]),
-					_List_fromArray(
-					[5000000, 8999999, 3]),
-					_List_fromArray(
-					[9000000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9985',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 4999999, 1]),
-					_List_fromArray(
-					[5000000, 7999999, 2]),
-					_List_fromArray(
-					[8000000, 8999999, 3]),
-					_List_fromArray(
-					[9000000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9986',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 3999999, 2]),
-					_List_fromArray(
-					[4000000, 8999999, 3]),
-					_List_fromArray(
-					[9000000, 9399999, 4]),
-					_List_fromArray(
-					[9400000, 9699999, 3]),
-					_List_fromArray(
-					[9700000, 9999999, 2])
-				])),
-			_Utils_Tuple2(
-			'978-9987',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 3999999, 2]),
-					_List_fromArray(
-					[4000000, 8799999, 3]),
-					_List_fromArray(
-					[8800000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9988',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 2999999, 1]),
-					_List_fromArray(
-					[3000000, 5499999, 2]),
-					_List_fromArray(
-					[5500000, 7499999, 3]),
-					_List_fromArray(
-					[7500000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-9989',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 999999, 1]),
-					_List_fromArray(
-					[1000000, 1999999, 3]),
-					_List_fromArray(
-					[2000000, 2999999, 4]),
-					_List_fromArray(
-					[3000000, 5999999, 2]),
-					_List_fromArray(
-					[6000000, 9499999, 3]),
-					_List_fromArray(
-					[9500000, 9999999, 4])
-				])),
-			_Utils_Tuple2(
-			'978-99901',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 4999999, 2]),
-					_List_fromArray(
-					[5000000, 7999999, 3]),
-					_List_fromArray(
-					[8000000, 9999999, 2])
-				])),
-			_Utils_Tuple2(
-			'978-99902',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 9999999, 0])
-				])),
-			_Utils_Tuple2(
-			'978-99903',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 1]),
-					_List_fromArray(
-					[2000000, 8999999, 2]),
-					_List_fromArray(
-					[9000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99904',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 5999999, 1]),
-					_List_fromArray(
-					[6000000, 8999999, 2]),
-					_List_fromArray(
-					[9000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99905',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 3999999, 1]),
-					_List_fromArray(
-					[4000000, 7999999, 2]),
-					_List_fromArray(
-					[8000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99906',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 2999999, 1]),
-					_List_fromArray(
-					[3000000, 5999999, 2]),
-					_List_fromArray(
-					[6000000, 6999999, 3]),
-					_List_fromArray(
-					[7000000, 8999999, 2]),
-					_List_fromArray(
-					[9000000, 9499999, 2]),
-					_List_fromArray(
-					[9500000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99908',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 999999, 1]),
-					_List_fromArray(
-					[1000000, 8999999, 2]),
-					_List_fromArray(
-					[9000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99909',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 3999999, 1]),
-					_List_fromArray(
-					[4000000, 9499999, 2]),
-					_List_fromArray(
-					[9500000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99910',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 2999999, 1]),
-					_List_fromArray(
-					[3000000, 8999999, 2]),
-					_List_fromArray(
-					[9000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99911',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 5999999, 2]),
-					_List_fromArray(
-					[6000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99912',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 3999999, 1]),
-					_List_fromArray(
-					[4000000, 5999999, 3]),
-					_List_fromArray(
-					[6000000, 8999999, 2]),
-					_List_fromArray(
-					[9000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99913',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 2999999, 1]),
-					_List_fromArray(
-					[3000000, 3599999, 2]),
-					_List_fromArray(
-					[3600000, 5999999, 0]),
-					_List_fromArray(
-					[6000000, 6049999, 3]),
-					_List_fromArray(
-					[6050000, 9999999, 0])
-				])),
-			_Utils_Tuple2(
-			'978-99914',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 4999999, 1]),
-					_List_fromArray(
-					[5000000, 8999999, 2]),
-					_List_fromArray(
-					[9000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99915',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 4999999, 1]),
-					_List_fromArray(
-					[5000000, 7999999, 2]),
-					_List_fromArray(
-					[8000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99916',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 2999999, 1]),
-					_List_fromArray(
-					[3000000, 6999999, 2]),
-					_List_fromArray(
-					[7000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99917',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 2999999, 1]),
-					_List_fromArray(
-					[3000000, 8999999, 2]),
-					_List_fromArray(
-					[9000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99918',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 3999999, 1]),
-					_List_fromArray(
-					[4000000, 7999999, 2]),
-					_List_fromArray(
-					[8000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99919',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 2999999, 1]),
-					_List_fromArray(
-					[3000000, 3999999, 3]),
-					_List_fromArray(
-					[4000000, 6999999, 2]),
-					_List_fromArray(
-					[7000000, 7999999, 2]),
-					_List_fromArray(
-					[8000000, 8499999, 3]),
-					_List_fromArray(
-					[8500000, 8999999, 3]),
-					_List_fromArray(
-					[9000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99920',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 4999999, 1]),
-					_List_fromArray(
-					[5000000, 8999999, 2]),
-					_List_fromArray(
-					[9000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99921',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 1]),
-					_List_fromArray(
-					[2000000, 6999999, 2]),
-					_List_fromArray(
-					[7000000, 7999999, 3]),
-					_List_fromArray(
-					[8000000, 8999999, 1]),
-					_List_fromArray(
-					[9000000, 9999999, 2])
-				])),
-			_Utils_Tuple2(
-			'978-99922',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 3999999, 1]),
-					_List_fromArray(
-					[4000000, 6999999, 2]),
-					_List_fromArray(
-					[7000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99923',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 1]),
-					_List_fromArray(
-					[2000000, 7999999, 2]),
-					_List_fromArray(
-					[8000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99924',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 1]),
-					_List_fromArray(
-					[2000000, 7999999, 2]),
-					_List_fromArray(
-					[8000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99925',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 3999999, 1]),
-					_List_fromArray(
-					[4000000, 7999999, 2]),
-					_List_fromArray(
-					[8000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99926',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 999999, 1]),
-					_List_fromArray(
-					[1000000, 5999999, 2]),
-					_List_fromArray(
-					[6000000, 8699999, 3]),
-					_List_fromArray(
-					[8700000, 8999999, 2]),
-					_List_fromArray(
-					[9000000, 9999999, 2])
-				])),
-			_Utils_Tuple2(
-			'978-99927',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 2999999, 1]),
-					_List_fromArray(
-					[3000000, 5999999, 2]),
-					_List_fromArray(
-					[6000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99928',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 999999, 1]),
-					_List_fromArray(
-					[1000000, 7999999, 2]),
-					_List_fromArray(
-					[8000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99929',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 4999999, 1]),
-					_List_fromArray(
-					[5000000, 7999999, 2]),
-					_List_fromArray(
-					[8000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99930',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 4999999, 1]),
-					_List_fromArray(
-					[5000000, 7999999, 2]),
-					_List_fromArray(
-					[8000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99931',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 4999999, 1]),
-					_List_fromArray(
-					[5000000, 7999999, 2]),
-					_List_fromArray(
-					[8000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99932',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 999999, 1]),
-					_List_fromArray(
-					[1000000, 5999999, 2]),
-					_List_fromArray(
-					[6000000, 6999999, 3]),
-					_List_fromArray(
-					[7000000, 7999999, 1]),
-					_List_fromArray(
-					[8000000, 9999999, 2])
-				])),
-			_Utils_Tuple2(
-			'978-99933',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 2999999, 1]),
-					_List_fromArray(
-					[3000000, 5999999, 2]),
-					_List_fromArray(
-					[6000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99934',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 1]),
-					_List_fromArray(
-					[2000000, 7999999, 2]),
-					_List_fromArray(
-					[8000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99935',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 2999999, 1]),
-					_List_fromArray(
-					[3000000, 5999999, 2]),
-					_List_fromArray(
-					[6000000, 6999999, 3]),
-					_List_fromArray(
-					[7000000, 8999999, 1]),
-					_List_fromArray(
-					[9000000, 9999999, 2])
-				])),
-			_Utils_Tuple2(
-			'978-99936',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 999999, 1]),
-					_List_fromArray(
-					[1000000, 5999999, 2]),
-					_List_fromArray(
-					[6000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99937',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 1]),
-					_List_fromArray(
-					[2000000, 5999999, 2]),
-					_List_fromArray(
-					[6000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99938',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 1]),
-					_List_fromArray(
-					[2000000, 5999999, 2]),
-					_List_fromArray(
-					[6000000, 8999999, 3]),
-					_List_fromArray(
-					[9000000, 9999999, 2])
-				])),
-			_Utils_Tuple2(
-			'978-99939',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 5999999, 1]),
-					_List_fromArray(
-					[6000000, 8999999, 2]),
-					_List_fromArray(
-					[9000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99940',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 999999, 1]),
-					_List_fromArray(
-					[1000000, 6999999, 2]),
-					_List_fromArray(
-					[7000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99941',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 2999999, 1]),
-					_List_fromArray(
-					[3000000, 7999999, 2]),
-					_List_fromArray(
-					[8000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99942',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 4999999, 1]),
-					_List_fromArray(
-					[5000000, 7999999, 2]),
-					_List_fromArray(
-					[8000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99943',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 2999999, 1]),
-					_List_fromArray(
-					[3000000, 5999999, 2]),
-					_List_fromArray(
-					[6000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99944',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 4999999, 1]),
-					_List_fromArray(
-					[5000000, 7999999, 2]),
-					_List_fromArray(
-					[8000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99945',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 5999999, 1]),
-					_List_fromArray(
-					[6000000, 8999999, 2]),
-					_List_fromArray(
-					[9000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99946',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 2999999, 1]),
-					_List_fromArray(
-					[3000000, 5999999, 2]),
-					_List_fromArray(
-					[6000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99947',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 2999999, 1]),
-					_List_fromArray(
-					[3000000, 6999999, 2]),
-					_List_fromArray(
-					[7000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99948',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 4999999, 1]),
-					_List_fromArray(
-					[5000000, 7999999, 2]),
-					_List_fromArray(
-					[8000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99949',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 1]),
-					_List_fromArray(
-					[2000000, 8999999, 2]),
-					_List_fromArray(
-					[9000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99950',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 4999999, 1]),
-					_List_fromArray(
-					[5000000, 7999999, 2]),
-					_List_fromArray(
-					[8000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99951',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 9999999, 0])
-				])),
-			_Utils_Tuple2(
-			'978-99952',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 4999999, 1]),
-					_List_fromArray(
-					[5000000, 7999999, 2]),
-					_List_fromArray(
-					[8000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99953',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 2999999, 1]),
-					_List_fromArray(
-					[3000000, 7999999, 2]),
-					_List_fromArray(
-					[8000000, 9399999, 3]),
-					_List_fromArray(
-					[9400000, 9999999, 2])
-				])),
-			_Utils_Tuple2(
-			'978-99954',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 2999999, 1]),
-					_List_fromArray(
-					[3000000, 6999999, 2]),
-					_List_fromArray(
-					[7000000, 8799999, 3]),
-					_List_fromArray(
-					[8800000, 9999999, 2])
-				])),
-			_Utils_Tuple2(
-			'978-99955',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 1]),
-					_List_fromArray(
-					[2000000, 5999999, 2]),
-					_List_fromArray(
-					[6000000, 7999999, 3]),
-					_List_fromArray(
-					[8000000, 9999999, 2])
-				])),
-			_Utils_Tuple2(
-			'978-99956',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 5999999, 2]),
-					_List_fromArray(
-					[6000000, 8599999, 3]),
-					_List_fromArray(
-					[8600000, 9999999, 2])
-				])),
-			_Utils_Tuple2(
-			'978-99957',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 1]),
-					_List_fromArray(
-					[2000000, 7999999, 2]),
-					_List_fromArray(
-					[8000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99958',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 4999999, 1]),
-					_List_fromArray(
-					[5000000, 9399999, 2]),
-					_List_fromArray(
-					[9400000, 9499999, 3]),
-					_List_fromArray(
-					[9500000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99959',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 2999999, 1]),
-					_List_fromArray(
-					[3000000, 5999999, 2]),
-					_List_fromArray(
-					[6000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99960',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 999999, 1]),
-					_List_fromArray(
-					[1000000, 9499999, 2]),
-					_List_fromArray(
-					[9500000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99961',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 3999999, 1]),
-					_List_fromArray(
-					[4000000, 8999999, 2]),
-					_List_fromArray(
-					[9000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99962',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 4999999, 1]),
-					_List_fromArray(
-					[5000000, 7999999, 2]),
-					_List_fromArray(
-					[8000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99963',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 4999999, 2]),
-					_List_fromArray(
-					[5000000, 9199999, 3]),
-					_List_fromArray(
-					[9200000, 9999999, 2])
-				])),
-			_Utils_Tuple2(
-			'978-99964',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 1]),
-					_List_fromArray(
-					[2000000, 7999999, 2]),
-					_List_fromArray(
-					[8000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99965',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 2999999, 1]),
-					_List_fromArray(
-					[3000000, 3999999, 3]),
-					_List_fromArray(
-					[4000000, 6299999, 2]),
-					_List_fromArray(
-					[6300000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99966',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 2999999, 1]),
-					_List_fromArray(
-					[3000000, 6999999, 2]),
-					_List_fromArray(
-					[7000000, 7999999, 3]),
-					_List_fromArray(
-					[8000000, 9499999, 2]),
-					_List_fromArray(
-					[9500000, 9999999, 0])
-				])),
-			_Utils_Tuple2(
-			'978-99967',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 1]),
-					_List_fromArray(
-					[2000000, 5999999, 2]),
-					_List_fromArray(
-					[6000000, 8999999, 3]),
-					_List_fromArray(
-					[9000000, 9999999, 0])
-				])),
-			_Utils_Tuple2(
-			'978-99968',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 3999999, 1]),
-					_List_fromArray(
-					[4000000, 5999999, 3]),
-					_List_fromArray(
-					[6000000, 8999999, 2]),
-					_List_fromArray(
-					[9000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99969',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 4999999, 1]),
-					_List_fromArray(
-					[5000000, 7999999, 2]),
-					_List_fromArray(
-					[8000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99970',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 4999999, 1]),
-					_List_fromArray(
-					[5000000, 8999999, 2]),
-					_List_fromArray(
-					[9000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99971',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 5999999, 1]),
-					_List_fromArray(
-					[6000000, 8499999, 2]),
-					_List_fromArray(
-					[8500000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99972',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 4999999, 1]),
-					_List_fromArray(
-					[5000000, 8999999, 2]),
-					_List_fromArray(
-					[9000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99973',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 3999999, 1]),
-					_List_fromArray(
-					[4000000, 7999999, 2]),
-					_List_fromArray(
-					[8000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99974',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 3999999, 0]),
-					_List_fromArray(
-					[4000000, 7999999, 2]),
-					_List_fromArray(
-					[8000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99975',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 3999999, 1]),
-					_List_fromArray(
-					[4000000, 7999999, 2]),
-					_List_fromArray(
-					[8000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99976',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 1]),
-					_List_fromArray(
-					[2000000, 5999999, 2]),
-					_List_fromArray(
-					[6000000, 7999999, 3]),
-					_List_fromArray(
-					[8000000, 9999999, 0])
-				])),
-			_Utils_Tuple2(
-			'978-99977',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 1]),
-					_List_fromArray(
-					[2000000, 3999999, 0]),
-					_List_fromArray(
-					[4000000, 6999999, 2]),
-					_List_fromArray(
-					[7000000, 7999999, 3]),
-					_List_fromArray(
-					[8000000, 9999999, 0])
-				])),
-			_Utils_Tuple2(
-			'978-99978',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 4999999, 1]),
-					_List_fromArray(
-					[5000000, 7999999, 2]),
-					_List_fromArray(
-					[8000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'978-99979',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 4999999, 1]),
-					_List_fromArray(
-					[5000000, 7999999, 2]),
-					_List_fromArray(
-					[8000000, 9999999, 3])
-				])),
-			_Utils_Tuple2(
-			'979-10',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 2]),
-					_List_fromArray(
-					[2000000, 6999999, 3]),
-					_List_fromArray(
-					[7000000, 8999999, 4]),
-					_List_fromArray(
-					[9000000, 9759999, 5]),
-					_List_fromArray(
-					[9760000, 9999999, 6])
-				])),
-			_Utils_Tuple2(
-			'979-11',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 2499999, 2]),
-					_List_fromArray(
-					[2500000, 5499999, 3]),
-					_List_fromArray(
-					[5500000, 8499999, 4]),
-					_List_fromArray(
-					[8500000, 9499999, 5]),
-					_List_fromArray(
-					[9500000, 9999999, 6])
-				])),
-			_Utils_Tuple2(
-			'979-12',
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[0, 1999999, 0]),
-					_List_fromArray(
-					[2000000, 2009999, 3]),
-					_List_fromArray(
-					[2010000, 9999999, 0])
-				]))
-		]));
-var elm$core$List$isEmpty = function (xs) {
-	if (!xs.b) {
-		return true;
-	} else {
-		return false;
-	}
-};
-var author$project$Main$dividePublisher = function (isbn) {
-	var headnat = (elm$core$List$isEmpty(isbn.header) ? '978' : author$project$Main$intsToString(isbn.header)) + ('-' + author$project$Main$intsToString(isbn.nation));
-	var ranges = function () {
-		var _n7 = A2(elm$core$Dict$get, headnat, author$project$Main$dictRange);
-		if (_n7.$ === 'Just') {
-			var dat = _n7.a;
-			return dat;
-		} else {
-			return _List_fromArray(
-				[
-					_List_fromArray(
-					[0, 0, 0])
-				]);
-		}
-	}();
-	var candidate = author$project$Main$intsToString(
-		A2(elm$core$List$take, 7, isbn.book));
-	var check = function (bounds) {
-		if (((bounds.b && bounds.b.b) && bounds.b.b.b) && (!bounds.b.b.b.b)) {
-			var lower = bounds.a;
-			var _n5 = bounds.b;
-			var upper = _n5.a;
-			var _n6 = _n5.b;
-			var n = _n6.a;
-			return (_Utils_cmp(
-				elm$core$String$fromInt(lower),
-				candidate) < 1) && (_Utils_cmp(
-				candidate,
-				elm$core$String$fromInt(upper)) < 1);
-		} else {
-			return false;
-		}
-	};
-	var range = function () {
-		var _n0 = A2(author$project$Main$find, check, ranges);
-		if (((((_n0.$ === 'Just') && _n0.a.b) && _n0.a.b.b) && _n0.a.b.b.b) && (!_n0.a.b.b.b.b)) {
-			var _n1 = _n0.a;
-			var lower = _n1.a;
-			var _n2 = _n1.b;
-			var upper = _n2.a;
-			var _n3 = _n2.b;
-			var n = _n3.a;
-			return n;
-		} else {
-			return 0;
-		}
-	}();
-	return A5(
-		author$project$Main$ISBN,
-		isbn.header,
-		isbn.nation,
-		A2(elm$core$List$take, range, isbn.book),
-		A2(elm$core$List$drop, range, isbn.book),
-		isbn.digit);
-};
-var author$project$Main$toISBN = function (digits) {
-	return A5(author$project$Main$ISBN, _List_Nil, _List_Nil, _List_Nil, digits, _List_Nil);
-};
-var author$project$Main$intsToISBN = A2(
-	elm$core$Basics$composeR,
-	author$project$Main$toISBN,
-	A2(elm$core$Basics$composeR, author$project$Main$divideNation, author$project$Main$dividePublisher));
-var author$project$Main$stringToISBN = A2(elm$core$Basics$composeR, author$project$Main$stringToInts, author$project$Main$intsToISBN);
-var elm$core$Basics$modBy = _Basics_modBy;
-var elm$core$Basics$negate = function (n) {
-	return -n;
-};
-var elm$core$List$sum = function (numbers) {
-	return A3(elm$core$List$foldl, elm$core$Basics$add, 0, numbers);
-};
-var author$project$Main$checksum13 = A2(
-	elm$core$Basics$composeR,
-	A2(
-		elm$core$List$map2,
-		elm$core$Basics$mul,
-		_List_fromArray(
-			[1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3])),
-	A2(
-		elm$core$Basics$composeR,
-		elm$core$List$sum,
-		A2(
-			elm$core$Basics$composeR,
-			elm$core$Basics$negate,
-			elm$core$Basics$modBy(10))));
-var author$project$Main$checksum10 = A2(
-	elm$core$Basics$composeR,
-	A2(
-		elm$core$List$map2,
-		elm$core$Basics$mul,
-		_List_fromArray(
-			[10, 9, 8, 7, 6, 5, 4, 3, 2])),
-	A2(
-		elm$core$Basics$composeR,
-		elm$core$List$sum,
-		A2(
-			elm$core$Basics$composeR,
-			elm$core$Basics$negate,
-			elm$core$Basics$modBy(11))));
-var elm$core$Basics$neq = _Utils_notEqual;
-var author$project$Main$verify = function (digits) {
-	var prefix = A2(elm$core$List$take, 3, digits);
-	var len = elm$core$List$length(digits);
-	var lastdigit = A2(elm$core$List$drop, len - 1, digits);
-	return (!len) ? elm$core$Result$Err('') : (((len !== 10) && (len !== 13)) ? elm$core$Result$Err('Error: wrong length') : (((len === 10) && (!_Utils_eq(
-		_List_fromArray(
-			[
-				author$project$Main$checksum10(digits)
-			]),
-		lastdigit))) ? elm$core$Result$Err('Error: bad check digit') : (((len === 13) && ((!_Utils_eq(
-		prefix,
-		_List_fromArray(
-			[9, 7, 8]))) && (!_Utils_eq(
-		prefix,
-		_List_fromArray(
-			[9, 7, 9]))))) ? elm$core$Result$Err('Error: invalid prefix') : (((len === 13) && (!_Utils_eq(
-		_List_fromArray(
-			[
-				author$project$Main$checksum13(digits)
-			]),
-		lastdigit))) ? elm$core$Result$Err('Error: bad check digit') : elm$core$Result$Ok(digits)))));
-};
-var elm$core$List$append = F2(
-	function (xs, ys) {
-		if (!ys.b) {
-			return xs;
-		} else {
-			return A3(elm$core$List$foldr, elm$core$List$cons, ys, xs);
-		}
-	});
-var author$project$Main$conv13 = function (digits) {
-	var result = author$project$Main$verify(digits);
-	var len = elm$core$List$length(digits);
-	var body = A2(
-		elm$core$List$append,
-		_List_fromArray(
-			[9, 7, 8]),
-		A2(elm$core$List$take, 9, digits));
-	if (result.$ === 'Err') {
-		return result;
-	} else {
-		return (len === 13) ? result : elm$core$Result$Ok(
-			_Utils_ap(
-				body,
-				_List_fromArray(
-					[
-						author$project$Main$checksum13(body)
-					])));
-	}
-};
-var author$project$Main$fromISBN = function (isbn) {
-	return _List_fromArray(
-		[isbn.header, isbn.nation, isbn.publisher, isbn.book, isbn.digit]);
-};
-var elm$core$Basics$not = _Basics_not;
-var author$project$Main$hyphenate = function (result) {
-	if (result.$ === 'Err') {
-		var str = result.a;
-		return str;
-	} else {
-		var ns = result.a;
-		return A2(
-			elm$core$String$join,
-			'-',
-			A2(
-				elm$core$List$map,
-				author$project$Main$intsToString,
-				A2(
-					elm$core$List$filter,
-					A2(elm$core$Basics$composeR, elm$core$List$isEmpty, elm$core$Basics$not),
-					author$project$Main$fromISBN(
-						author$project$Main$intsToISBN(ns)))));
-	}
-};
-var author$project$Main$to13h = A2(
-	elm$core$Basics$composeR,
-	author$project$Main$stringToInts,
-	A2(elm$core$Basics$composeR, author$project$Main$conv13, author$project$Main$hyphenate));
-var elm$core$Basics$composeL = F3(
-	function (g, f, x) {
-		return g(
-			f(x));
-	});
-var elm$json$Json$Decode$field = _Json_decodeField;
-var elm$json$Json$Decode$index = _Json_decodeIndex;
-var elm$json$Json$Decode$list = _Json_decodeList;
-var elm$json$Json$Decode$map = _Json_map1;
-var elm$json$Json$Decode$map3 = _Json_map3;
-var elm$json$Json$Decode$string = _Json_decodeString;
-var author$project$Main$bookDecoder = F2(
-	function (n, str) {
-		var volume = A2(
-			elm$core$Basics$composeL,
-			A2(
-				elm$core$Basics$composeL,
-				elm$json$Json$Decode$field('items'),
-				elm$json$Json$Decode$index(0)),
-			elm$json$Json$Decode$field('volumeInfo'));
-		var title = A3(
-			elm$core$Basics$composeL,
-			volume,
-			elm$json$Json$Decode$field('title'),
-			elm$json$Json$Decode$string);
-		var isbn = author$project$Main$stringToISBN(str);
-		var date = A3(
-			elm$core$Basics$composeL,
-			volume,
-			elm$json$Json$Decode$field('publishedDate'),
-			elm$json$Json$Decode$string);
-		var authors = A2(
-			elm$json$Json$Decode$map,
-			elm$core$String$join(', '),
-			A3(
-				elm$core$Basics$composeL,
-				volume,
-				elm$json$Json$Decode$field('authors'),
-				elm$json$Json$Decode$list(elm$json$Json$Decode$string)));
-		return A4(
-			elm$json$Json$Decode$map3,
-			F3(
-				function (x, y, z) {
-					return {
-						authors: y,
-						input: str,
-						isbn13: author$project$Main$to13h(str),
-						nation: author$project$Main$getNation(isbn),
-						order: n,
-						pubdate: x,
-						publisher: author$project$Main$getPub(isbn),
-						remark: '',
-						title: z
-					};
-				}),
-			date,
-			authors,
-			title);
-	});
 var author$project$Main$unhyphenate = function (result) {
 	if (result.$ === 'Err') {
 		var str = result.a;
@@ -22798,13 +22848,26 @@ var author$project$Main$getBooksInfo = function () {
 	var getBookInfo = function (_n0) {
 		var n = _n0.a;
 		var str = _n0.b;
-		return elm$http$Http$get(
+		return _Utils_eq(
+			function ($) {
+				return $.nation;
+			}(
+				author$project$Main$stringToISBN(str)),
+			_List_fromArray(
+				[4])) ? elm$http$Http$get(
 			{
 				expect: A2(
 					A2(expectISBN, n, str),
 					author$project$Main$GotBookInfo,
-					A2(author$project$Main$bookDecoder, n, str)),
-				url: 'https://www.googleapis.com/books/v1/volumes?q=isbn:' + (author$project$Main$to13(str) + '&country=JP')
+					A2(author$project$Main$bookDecoderJ, n, str)),
+				url: 'https://api.openbd.jp/v1/get?isbn=' + author$project$Main$to13(str)
+			}) : elm$http$Http$get(
+			{
+				expect: A2(
+					A2(expectISBN, n, str),
+					author$project$Main$GotBookInfo,
+					A2(author$project$Main$bookDecoderF, n, str)),
+				url: 'https://www.googleapis.com/books/v1/volumes?q=isbn:' + author$project$Main$to13(str)
 			});
 	};
 	return A2(

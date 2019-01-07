@@ -263,63 +263,87 @@
         in
           header :: List.map makeRow model.table
    
-  
-  
-  -- HTTP
-  getBooksInfo : List (Int, String) -> Cmd Msg
-  getBooksInfo = 
-    let
-      makeErrBook n str err =  { order = n
-                               , input=str
-                               , isbn13=to13h str
-                               , nation = getNation (stringToISBN str)
-                               , publisher = getPub (stringToISBN str)
-                               , pubdate = ""
-                               , authors = ""
-                               , title = ""
-                               , remark = err
-                               }
-      expectISBN : Int -> String -> (Result Http.Error Book -> Msg) -> Decoder Book -> Http.Expect Msg
-      expectISBN n str toMsg decoder = Http.expectStringResponse toMsg <|
-        \response ->
-          case response of
-            Http.BadUrl_ url -> Ok (makeErrBook n str "Error (Bad URL)")
-            Http.Timeout_ -> Ok (makeErrBook n str "Error (Timeout)")
-            Http.NetworkError_ -> Ok (makeErrBook n str "Network Error")
-            Http.BadStatus_ metadata body -> Ok (makeErrBook n str ("Error (Bad Status: " ++ String.fromInt metadata.statusCode ++ ")"))
-            Http.GoodStatus_ metadata body ->
-              case Json.Decode.decodeString decoder body of
-                Ok value -> Ok value
-                Err _ -> case verify (stringToInts str) of
-                           Ok  _ -> Ok (makeErrBook n str "Not Found")
-                           Err _ -> Ok (makeErrBook n str "N/A (Bad ISBN)")
-      getBookInfo (n, str) = Http.get { url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" ++ (to13 str) ++ "&country=JP"
-                             , expect = (expectISBN n str) GotBookInfo (bookDecoder n str)
+    
+-- HTTP
+getBooksInfo : List (Int, String) -> Cmd Msg
+getBooksInfo = 
+  let
+    makeErrBook n str err =  { order = n
+                             , input=str
+                             , isbn13=to13h str
+                             , nation = getNation (stringToISBN str)
+                             , publisher = getPub (stringToISBN str)
+                             , pubdate = ""
+                             , authors = ""
+                             , title = ""
+                             , remark = err
                              }
-    in
-      List.map getBookInfo >> Cmd.batch 
-  
-  bookDecoder : Int -> String -> Decoder Book
-  bookDecoder n str =
-    let 
-      volume =  field "items" << index 0 << field "volumeInfo"
-      title   = volume << field "title" <| string
-      authors =  Json.Decode.map (String.join ", ") (volume << field "authors" <| list string)
-      date    = volume << field "publishedDate" <| string
-      isbn    = stringToISBN str
-    in
-      Json.Decode.map3 (\x y z-> { order = n
-                                 , input = str
-                                 , isbn13 = to13h str
-                                 , nation = getNation isbn
-                                 , publisher = getPub isbn
-                                 , pubdate = x
-                                 , authors = y
-                                 , title   = z
-                                 , remark  = ""
-                                 } ) date authors title
-  
-  
+    expectISBN : Int -> String -> (Result Http.Error Book -> Msg) -> Decoder Book -> Http.Expect Msg
+    expectISBN n str toMsg decoder = Http.expectStringResponse toMsg <|
+      \response ->
+        case response of
+          Http.BadUrl_ url -> Ok (makeErrBook n str "Error (Bad URL)")
+          Http.Timeout_ -> Ok (makeErrBook n str "Error (Timeout)")
+          Http.NetworkError_ -> Ok (makeErrBook n str "Network Error")
+          Http.BadStatus_ metadata body -> Ok (makeErrBook n str ("Error (Bad Status: " ++ String.fromInt metadata.statusCode ++ ")"))
+          Http.GoodStatus_ metadata body ->
+            case Json.Decode.decodeString decoder body of
+              Ok value -> Ok value
+              Err _ -> case verify (stringToInts str) of
+                         Ok  _ -> Ok (makeErrBook n str "Not Found")
+                         Err _ -> Ok (makeErrBook n str "N/A (Bad ISBN)")
+    getBookInfo (n, str) = if .nation (stringToISBN str) == [4]
+                             then Http.get { url = "https://api.openbd.jp/v1/get?isbn=" ++ (to13 str)
+                                           , expect = (expectISBN n str) GotBookInfo (bookDecoderJ n str)
+                                           }
+                             else Http.get { url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" ++ (to13 str) 
+                                           , expect = (expectISBN n str) GotBookInfo (bookDecoderF n str)
+                                           }
+  in
+    List.map getBookInfo >> Cmd.batch 
+
+bookDecoderF : Int -> String -> Decoder Book
+bookDecoderF n str =
+  let 
+    volume =  field "items" << index 0 << field "volumeInfo"
+    title   = volume << field "title" <| string
+    authors =  Json.Decode.map (String.join ", ") (volume << field "authors" <| list string)
+    date    = volume << field "publishedDate" <| string
+    isbn    = stringToISBN str
+  in
+    Json.Decode.map3 (\x y z-> { order = n
+                               , input = str
+                               , isbn13 = to13h str
+                               , nation = getNation isbn
+                               , publisher = "" -- getPub isbn
+                               , pubdate = x
+                               , authors = y
+                               , title   = z
+                               , remark  = ""
+                               } ) date authors title
+
+bookDecoderJ : Int -> String -> Decoder Book
+bookDecoderJ n str =
+  let 
+    volume = index 0 << field "summary"
+    title   = volume << field "title"   <| string
+    authors =  volume << field "author" <| string
+    date    = volume << field "pubdate" <| string
+    publisher = volume << field "publisher" <| string
+    isbn    = stringToISBN str
+  in
+    Json.Decode.map4 (\w x y z-> { order = n
+                               , input = str
+                               , isbn13 = to13h str
+                               , nation = getNation isbn
+                               , publisher = w
+                               , pubdate = x
+                               , authors = y
+                               , title   = z
+                               , remark  = ""
+                               } ) publisher date authors title
+
+    
   -- Codes concerning ISBN
   find : (a -> Bool) -> (List a) -> Maybe a
   find pred list = case list of 
