@@ -22940,7 +22940,7 @@ var author$project$Main$update = F2(
 					author$project$Main$getBooksInfo(model.content));
 			default:
 				var result = msg.a;
-				if (_Utils_eq(m - 1, v)) {
+				if (_Utils_eq(m - 1, v) || ((!m) && (!v))) {
 					if (result.$ === 'Ok') {
 						var info = result.a;
 						return _Utils_Tuple2(

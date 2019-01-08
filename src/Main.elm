@@ -122,7 +122,7 @@ update msg model =
       Scroll newOffset -> ({ model | offset=newOffset}, Cmd.none)
       Retrieve -> ({ model| books=[], table=[], status = Loading m 0}, getBooksInfo model.content)
       GotBookInfo result ->
-        if m-1 == v -- i.e. if the following retrieval is the last of all 
+        if m-1 == v || (m == 0 && v == 0)-- i.e. if the following retrieval is the last of all 
           then case result of
             Ok info -> ({model| table = List.sortBy .order (info::model.books)
                               , books = info::model.books, status = Done}, Cmd.none)
