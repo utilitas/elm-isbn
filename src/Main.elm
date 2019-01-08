@@ -120,16 +120,21 @@ update msg model =
                                   , content=(newInput|>String.trimRight|>String.lines|>enumerate) }
                          , Cmd.none)
       Scroll newOffset -> ({ model | offset=newOffset}, Cmd.none)
-      Retrieve -> ({ model| books=[], table=[], status = Loading m 0}, getBooksInfo model.content)
+      Retrieve -> if model.content == [] || model.content == [(0,"")] then ( { model| content=[]
+                                                                                    , books = []
+                                                                                    , table = []
+                                                                                    , status=Done}
+                                                                           , Cmd.none) 
+                  else ({ model| books=[], table=[], status = Loading m 0}, getBooksInfo model.content)
       GotBookInfo result ->
-        if m-1 == v || (m == 0 && v == 0)-- i.e. if the following retrieval is the last of all 
+        if m-1 == v  -- i.e. if the following retrieval is the last of all 
           then case result of
             Ok info -> ({model| table = List.sortBy .order (info::model.books)
-                              , books = info::model.books, status = Done}, Cmd.none)
+                             , books = info::model.books, status = Done}, Cmd.none)
             Err _   -> ({model| table = [makeEmptyBook 0], status = Done}, Cmd.none)
-          else  case result of
-            Ok info -> ({model| books = info::model.books, status = Loading m v}, Cmd.none)
-            Err _   -> ({model| books = [makeEmptyBook 0], status = Loading m v}, Cmd.none)
+        else  case result of
+          Ok info -> ({model| books = info::model.books, status = Loading m v}, Cmd.none)
+          Err _   -> ({model| books = [makeEmptyBook 0], status = Loading m v}, Cmd.none)
 
 
 onScroll : (Float -> msg) -> Attribute msg

@@ -152,7 +152,12 @@
                                     , content=(newInput|>String.trimRight|>String.lines|>enumerate) }
                            , Cmd.none)
         Scroll newOffset -> ({ model | offset=newOffset}, Cmd.none)
-        Retrieve -> ({ model| books=[], table=[], status = Loading m 0}, getBooksInfo model.content)
+        Retrieve -> if model.content == [] || model.content == [(0,"")] then ( { model| content=[]
+                                                                                      , books = []
+                                                                                      , table = []
+                                                                                      , status=Done}
+                                                                              , Cmd.none) 
+else ({ model| books=[], table=[], status = Loading m 0}, getBooksInfo model.content)
         GotBookInfo result ->
           if m-1 == v || ( m == 0 && v == 0) -- i.e. if the following retrieval is the last of all 
             then case result of

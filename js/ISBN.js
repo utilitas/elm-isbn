@@ -22929,7 +22929,16 @@ var author$project$Main$update = F2(
 						{offset: newOffset}),
 					elm$core$Platform$Cmd$none);
 			case 'Retrieve':
-				return _Utils_Tuple2(
+				return (_Utils_eq(model.content, _List_Nil) || _Utils_eq(
+					model.content,
+					_List_fromArray(
+						[
+							_Utils_Tuple2(0, '')
+						]))) ? _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{books: _List_Nil, content: _List_Nil, status: author$project$Main$Done, table: _List_Nil}),
+					elm$core$Platform$Cmd$none) : _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{
@@ -22940,7 +22949,7 @@ var author$project$Main$update = F2(
 					author$project$Main$getBooksInfo(model.content));
 			default:
 				var result = msg.a;
-				if (_Utils_eq(m - 1, v) || ((!m) && (!v))) {
+				if (_Utils_eq(m - 1, v)) {
 					if (result.$ === 'Ok') {
 						var info = result.a;
 						return _Utils_Tuple2(
